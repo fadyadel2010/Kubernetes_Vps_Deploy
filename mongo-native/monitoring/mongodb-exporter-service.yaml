@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-exporter
+  namespace: mongo
+  labels:
+    app: mongodb-exporter
+  annotations:                          # ✅ Add if using plain Prometheus
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9216"
+    prometheus.io/path: "/metrics"
+spec:
+  type: ClusterIP                       # ✅ Explicit default
+  selector:
+    app: mongodb-exporter
+  ports:
+    - name: metrics
+      port: 9216
+      targetPort: 9216
+      protocol: TCP                     # ✅ Explicit protocol

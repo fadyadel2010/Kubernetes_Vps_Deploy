@@ -1,0 +1,35 @@
+apiVersion: redis.redis.opstreelabs.in/v1beta2
+kind: RedisReplication
+
+metadata:
+  name: redis
+  namespace: redis
+
+spec:
+  clusterSize: 3
+
+  kubernetesConfig:
+    image: quay.io/opstree/redis:v7.0.15
+
+  redisSecret:
+    name: redis-auth
+    key: password
+
+    service:
+      serviceType: ClusterIP
+
+  storage:
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+
+        resources:
+          requests:
+            storage: 5Gi
+
+  redisExporter:
+    enabled: true
+    image: quay.io/opstree/redis-exporter
+
+  

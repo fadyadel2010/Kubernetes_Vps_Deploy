@@ -1,0 +1,2427 @@
+apiVersion: v1
+data:
+  opensearch-cluster-red.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: OpenSearch
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: opensearchclusterred
+
+            title: OpenSearch Cluster Red
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: elasticsearch_cluster_health_status{color="red"}
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 1
+                        type: gte
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: Alerting
+            execErrState: Alerting
+
+            for: 2m
+
+            annotations:
+              summary: OpenSearch cluster health is RED
+              description: One or more primary shards are unavailable. Cluster requires immediate investigation.
+
+            labels:
+              severity: critical
+              stack: opensearch
+
+            isPaused: false
+  opensearch-cluster-yellow.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: OpenSearch
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: opensearchclusteryellow
+
+            title: OpenSearch Cluster Yellow
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: elasticsearch_cluster_health_status{color="yellow"}
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 1
+                        type: gte
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: Alerting
+            execErrState: Alerting
+
+            for: 5m
+
+            annotations:
+              summary: OpenSearch cluster health is YELLOW
+              description: Replica shards are unavailable or allocation is incomplete. Cluster remains operational but redundancy is reduced.
+
+            labels:
+              severity: warning
+              stack: opensearch
+
+            isPaused: false
+  opensearch-disk-usage-critical.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: OpenSearch
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: opensearchdiskcritical
+
+            title: OpenSearch Disk Usage High Critical
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: |
+                    max(
+                      (
+                        (
+                          elasticsearch_filesystem_data_size_bytes
+                          -
+                          elasticsearch_filesystem_data_available_bytes
+                        )
+                        /
+                        elasticsearch_filesystem_data_size_bytes
+                      ) * 100
+                    )
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 90
+                        type: gte
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: Alerting
+            execErrState: Alerting
+
+            for: 5m
+
+            annotations:
+              summary: OpenSearch disk usage is above 90%
+              description: OpenSearch data disk utilization has exceeded 90% for more than 5 minutes. Cluster stability, shard allocation and indexing operations may be impacted.
+
+            labels:
+              severity: critical
+              stack: opensearch
+
+            isPaused: false
+  opensearch-disk-usage-warning.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: OpenSearch
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: opensearchdiskwarning
+
+            title: OpenSearch Disk Usage High Warning
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: |
+                    max(
+                      (
+                        (
+                          elasticsearch_filesystem_data_size_bytes
+                          -
+                          elasticsearch_filesystem_data_available_bytes
+                        )
+                        /
+                        elasticsearch_filesystem_data_size_bytes
+                      ) * 100
+                    )
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 85
+                        type: gte
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: Alerting
+            execErrState: Alerting
+
+            for: 10m
+
+            annotations:
+              summary: OpenSearch disk usage is above 85%
+              description: OpenSearch data disk utilization has exceeded 85% for more than 10 minutes. Capacity planning or cleanup may be required.
+
+            labels:
+              severity: warning
+              stack: opensearch
+
+            isPaused: false
+  opensearch-jvm-heap-critical.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: OpenSearch
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: opensearchjvmcritical
+
+            title: OpenSearch JVM Heap High Critical
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: |
+                    max(
+                      (
+                        elasticsearch_jvm_memory_used_bytes{area="heap"}
+                        /
+                        elasticsearch_jvm_memory_max_bytes{area="heap"}
+                      ) * 100
+                    )
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 90
+                        type: gte
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: Alerting
+            execErrState: Alerting
+
+            for: 5m
+
+            annotations:
+              summary: OpenSearch JVM heap usage is above 90%
+              description: JVM heap utilization has exceeded 90% for more than 5 minutes. Cluster stability and performance may be at risk.
+
+            labels:
+              severity: critical
+              stack: opensearch
+
+            isPaused: false
+  opensearch-jvm-heap-warning.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: OpenSearch
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: opensearchjvmwarning
+
+            title: OpenSearch JVM Heap High Warning
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: |
+                    max(
+                      (
+                        elasticsearch_jvm_memory_used_bytes{area="heap"}
+                        /
+                        elasticsearch_jvm_memory_max_bytes{area="heap"}
+                      ) * 100
+                    )
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 75
+                        type: gte
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: Alerting
+            execErrState: Alerting
+
+            for: 10m
+
+            annotations:
+              summary: OpenSearch JVM heap usage is above 75%
+              description: JVM heap utilization has exceeded 75% for more than 10 minutes. Investigate memory pressure before it impacts cluster stability.
+
+            labels:
+              severity: warning
+              stack: opensearch
+
+            isPaused: false
+  opensearch-unassigned-shards.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: OpenSearch
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: opensearchunassigned
+
+            title: OpenSearch Unassigned Shards
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: elasticsearch_cluster_health_unassigned_shards
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: Alerting
+            execErrState: Alerting
+
+            for: 2m
+
+            annotations:
+              summary: OpenSearch has unassigned shards
+              description: One or more shards are unassigned. Data availability or redundancy may be affected.
+
+            labels:
+              severity: critical
+              stack: opensearch
+
+            isPaused: false
+  pg-backends-waiting.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: Postgres
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: pgbackendswaiting
+
+            title: PostgreSQL Backend Waiting
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: max(cnpg_backends_waiting_total)
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: OK
+            execErrState: Alerting
+
+            for: 2m
+
+            annotations:
+              summary: PostgreSQL backends are waiting for locks or resources
+
+            labels:
+              severity: warning
+              stack: postgres
+
+            isPaused: false
+  pg-cluster-down.yaml: |
+    apiVersion: 1
+    groups:
+        - orgId: 1
+          name: Postgres
+          folder: Infrastructure
+          interval: 1m
+          rules:
+            - uid: ffpszc7ej2qyoa
+              title: PostgreSQL Cluster Down
+              condition: C
+              data:
+                - refId: A
+                  relativeTimeRange:
+                    from: 600
+                    to: 0
+                  datasourceUid: ffom74f70o2rkb
+                  model:
+                    editorMode: code
+                    expr: min(cnpg_collector_up{cluster="shopixy-postgres"})
+                    instant: true
+                    intervalMs: 1000
+                    legendFormat: __auto
+                    maxDataPoints: 43200
+                    range: false
+                    refId: A
+                - refId: C
+                  datasourceUid: __expr__
+                  model:
+                    conditions:
+                        - evaluator:
+                            params:
+                                - 1
+                            type: lt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                                - C
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                    datasource:
+                        type: __expr__
+                        uid: __expr__
+                    expression: A
+                    intervalMs: 1000
+                    maxDataPoints: 43200
+                    refId: C
+                    type: threshold
+              noDataState: Alerting
+              execErrState: Alerting
+              for: 2m
+              annotations: {}
+              labels:
+                severity: critical
+                stack: postgres
+              isPaused: false
+              notification_settings:
+                receiver: empty
+  pg-long-transaction-critical.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: Postgres
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: pglongtransactioncritical
+
+            title: PostgreSQL Long Transaction Critical
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: max(cnpg_backends_max_tx_duration_seconds)
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 1800
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: OK
+            execErrState: Alerting
+
+            for: 2m
+
+            annotations:
+              summary: PostgreSQL transaction has been running for more than 30 minutes
+
+            labels:
+              severity: critical
+              stack: postgres
+
+            isPaused: false
+  pg-long-transaction-warning.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: Postgres
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: pglongtransactionwarning
+
+            title: PostgreSQL Long Transaction Warning
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: max(cnpg_backends_max_tx_duration_seconds)
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 300
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: OK
+            execErrState: Alerting
+
+            for: 2m
+
+            annotations:
+              summary: PostgreSQL transaction has been running for more than 5 minutes
+
+            labels:
+              severity: warning
+              stack: postgres
+
+            isPaused: false
+  pg-manual-switchover-required.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: Postgres
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: pgmanualswitchoverrequired
+
+            title: PostgreSQL Manual Switchover Required
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: max(cnpg_collector_manual_switchover_required)
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: Alerting
+            execErrState: Alerting
+
+            for: 1m
+
+            annotations:
+              summary: PostgreSQL cluster requires manual switchover intervention
+
+            labels:
+              severity: critical
+              stack: postgres
+
+            isPaused: false
+  pg-missing-replica.yaml: "apiVersion: 1\n\ngroups:\n  - orgId: 1\n    name: Postgres\n
+    \   folder: Infrastructure\n    interval: 1m\n\n    rules:\n      - uid: pg_missing_replica\n\n
+    \       title: PostgreSQL Missing Replica\n\n        condition: C\n\n        data:\n
+    \         - refId: A\n            relativeTimeRange:\n              from: 600\n
+    \             to: 0\n            datasourceUid: ffom74f70o2rkb\n            model:\n
+    \             editorMode: code\n              expr: max(cnpg_pg_replication_streaming_replicas)\n
+    \             instant: true\n              intervalMs: 1000\n              legendFormat:
+    __auto\n              maxDataPoints: 43200\n              range: false\n              refId:
+    A\n\n          - refId: C\n            datasourceUid: __expr__\n            model:\n
+    \             conditions:\n                - evaluator:\n                    params:\n
+    \                     - 2\n                    type: lt\n                  operator:\n
+    \                   type: and\n                  query:\n                    params:\n
+    \                     - C\n                  reducer:\n                    params:
+    []\n                    type: last\n                  type: query\n\n              datasource:\n
+    \               type: __expr__\n                uid: __expr__\n\n              expression:
+    A\n              intervalMs: 1000\n              maxDataPoints: 43200\n              refId:
+    C\n              type: threshold\n\n        noDataState: Alerting\n        execErrState:
+    Alerting\n\n        for: 2m\n\n        labels:\n          severity: critical\n
+    \         stack: postgres\n\n        annotations: {}\n\n        isPaused: false\n\n
+    \       \n"
+  pg-node-fenced.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: Postgres
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: pgnodefenced
+
+            title: PostgreSQL Node Fenced
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: max(cnpg_collector_fencing_on)
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: Alerting
+            execErrState: Alerting
+
+            for: 1m
+
+            annotations:
+              summary: PostgreSQL node fencing has been activated
+
+            labels:
+              severity: critical
+              stack: postgres
+
+            isPaused: false
+  pg-replication-lag-critical.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: Postgres
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: pgreplicationlagcritical
+
+            title: PostgreSQL Replication Lag Critical
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: max(cnpg_pg_replication_lag)
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 30
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: OK
+            execErrState: Alerting
+
+            for: 2m
+
+            annotations:
+              summary: Replication lag exceeded 30 seconds
+
+            labels:
+              severity: critical
+              stack: postgres
+
+            isPaused: false
+
+            notification_settings:
+              receiver: empty
+  pg-replication-lag-warning.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: Postgres
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: pgreplicationlagwarn
+
+            title: PostgreSQL Replication Lag Warning
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: max(cnpg_pg_replication_lag)
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 10
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: OK
+            execErrState: Alerting
+
+            for: 2m
+
+            annotations:
+              summary: Replication lag exceeded 10 seconds
+
+            labels:
+              severity: warning
+              stack: postgres
+
+            isPaused: false
+
+            notification_settings:
+              receiver: empty
+  pg-wal-usage-critical.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: Postgres
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: pgwalusagecritical
+
+            title: PostgreSQL WAL Usage Critical
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: |
+                    (
+                      max(cnpg_collector_pg_wal{value="count"})
+                      /
+                      max(cnpg_collector_pg_wal{value="max"})
+                    ) * 100
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 95
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: OK
+            execErrState: Alerting
+
+            for: 2m
+
+            annotations:
+              summary: WAL usage exceeded 95%
+
+            labels:
+              severity: critical
+              stack: postgres
+
+            isPaused: false
+  pg-wal-usage-warning.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: Postgres
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: pgwalusagewarning
+
+            title: PostgreSQL WAL Usage Warning
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: |
+                    (
+                      max(cnpg_collector_pg_wal{value="count"})
+                      /
+                      max(cnpg_collector_pg_wal{value="max"})
+                    ) * 100
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 80
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: OK
+            execErrState: Alerting
+
+            for: 5m
+
+            annotations:
+              summary: WAL usage exceeded 80%
+
+            labels:
+              severity: warning
+              stack: postgres
+
+            isPaused: false
+  rabbitmq-cluster-down.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: RabbitMQ
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: rabbitmqclusterdown
+
+            title: RabbitMQ Cluster Down
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: count(up{job="rabbitmq"} == 1)
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 3
+                        type: lt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: OK
+            execErrState: Alerting
+
+            for: 2m
+
+            annotations:
+              summary: RabbitMQ cluster has lost one or more nodes
+
+            labels:
+              severity: critical
+              stack: rabbitmq
+
+            isPaused: false
+  rabbitmq-high-connections-warning.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: RabbitMQ
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: rabbitmqhighconnwarn
+
+            title: RabbitMQ High Connections
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: max(rabbitmq_connections)
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 500
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: OK
+            execErrState: Alerting
+
+            for: 10m
+
+            annotations:
+              summary: RabbitMQ connections exceeded 500
+
+            labels:
+              severity: warning
+              stack: rabbitmq
+
+            isPaused: false
+  rabbitmq-high-memory-critical.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: RabbitMQ
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: rabbitmqhighmemcrit
+
+            title: RabbitMQ Critical Memory Usage
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: |
+                    max(
+                      rabbitmq_process_resident_memory_bytes
+                      /
+                      rabbitmq_resident_memory_limit_bytes
+                    )
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 0.9
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: OK
+            execErrState: Alerting
+
+            for: 2m
+
+            annotations:
+              summary: RabbitMQ memory usage exceeded 90%
+
+            labels:
+              severity: critical
+              stack: rabbitmq
+
+            isPaused: false
+  rabbitmq-high-memory-warning.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: RabbitMQ
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: rabbitmqhighmemwarn
+
+            title: RabbitMQ High Memory Usage
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: |
+                    max(
+                      rabbitmq_process_resident_memory_bytes
+                      /
+                      rabbitmq_resident_memory_limit_bytes
+                    )
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 0.8
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: OK
+            execErrState: Alerting
+
+            for: 5m
+
+            annotations:
+              summary: RabbitMQ memory usage exceeded 80%
+
+            labels:
+              severity: warning
+              stack: rabbitmq
+
+            isPaused: false
+  rabbitmq-no-consumers-warning.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: RabbitMQ
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: rabbitmqnoconsumers
+
+            title: RabbitMQ No Consumers
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: |
+                    (
+                      max(rabbitmq_queue_messages) > 100
+                    )
+                    and
+                    (
+                      max(rabbitmq_queue_consumers) == 0
+                    )
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: OK
+            execErrState: Alerting
+
+            for: 5m
+
+            annotations:
+              summary: RabbitMQ has queued messages but no consumers
+
+            labels:
+              severity: warning
+              stack: rabbitmq
+
+            isPaused: false
+  rabbitmq-queue-backlog-warning.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: RabbitMQ
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: rabbitmqqueuebacklog
+
+            title: RabbitMQ Queue Backlog
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: max(rabbitmq_queue_messages)
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 1000
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: OK
+            execErrState: Alerting
+
+            for: 10m
+
+            annotations:
+              summary: RabbitMQ queue backlog exceeded 1000 messages
+
+            labels:
+              severity: warning
+              stack: rabbitmq
+
+            isPaused: false
+  rabbitmq-unacked-messages-warning.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: RabbitMQ
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: rabbitmqunackedmsgs
+
+            title: RabbitMQ Unacked Messages
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: max(rabbitmq_queue_messages_unacked)
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 100
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: OK
+            execErrState: Alerting
+
+            for: 10m
+
+            annotations:
+              summary: RabbitMQ unacked messages exceeded 100
+
+            labels:
+              severity: warning
+              stack: rabbitmq
+
+            isPaused: false
+  redis-aof-rewrite-failure.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: Redis
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: redisaofrewritefailure
+
+            title: Redis AOF Rewrite Failure
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: min(redis_aof_last_bgrewrite_status)
+                  instant: true
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 1
+                        type: lt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: Alerting
+            execErrState: Alerting
+
+            for: 2m
+
+            annotations:
+              summary: Redis AOF background rewrite failed
+
+            labels:
+              severity: critical
+              stack: redis
+
+            isPaused: false
+  redis-aof-write-failure.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: Redis
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: redisaofwritefailure
+
+            title: Redis AOF Write Failure
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: min(redis_aof_last_write_status)
+                  instant: true
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 1
+                        type: lt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: Alerting
+            execErrState: Alerting
+
+            for: 2m
+
+            annotations:
+              summary: Redis AOF write failed
+
+            labels:
+              severity: critical
+              stack: redis
+
+            isPaused: false
+  redis-cluster-down.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: Redis
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: redisclusterdown
+
+            title: Redis Cluster Down
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: count(redis_up == 1)
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 3
+                        type: lt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: Alerting
+            execErrState: Alerting
+
+            for: 2m
+
+            annotations:
+              summary: Redis cluster has fewer than 3 healthy nodes
+
+            labels:
+              severity: critical
+              stack: redis
+
+            isPaused: false
+  redis-high-memory-warning.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: Redis
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: redishighmemorywarning
+
+            title: Redis High Memory Usage
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: |
+                    (
+                      max(container_memory_working_set_bytes{namespace="redis",container="redis"})
+                      /
+                      (4 * 1024 * 1024 * 1024)
+                    ) * 100
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 80
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: NoData
+            execErrState: Alerting
+
+            for: 5m
+
+            annotations:
+              summary: Redis memory usage exceeded 80% of configured limit
+
+            labels:
+              severity: warning
+              stack: redis
+
+            isPaused: false
+  redis-master-changed.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: Redis
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: redismasterchanged
+
+            title: Redis Master Changed
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 900
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: changes(redis_instance_info{role="master"}[15m])
+                  instant: true
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: OK
+            execErrState: Alerting
+
+            for: 0m
+
+            annotations:
+              summary: Redis master changed (Sentinel failover detected)
+
+            labels:
+              severity: warning
+              stack: redis
+
+            isPaused: false
+  redis-missing-replica.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: Redis
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: redismissingreplica
+
+            title: Redis Missing Replica
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: max(redis_connected_slaves)
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 2
+                        type: lt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: Alerting
+            execErrState: Alerting
+
+            for: 2m
+
+            annotations:
+              summary: Redis master has fewer than 2 connected replicas
+
+            labels:
+              severity: warning
+              stack: redis
+
+            isPaused: false
+  redis-rdb-save-failure.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: Redis
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: redisrdbsavefailure
+
+            title: Redis RDB Save Failure
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: min(redis_rdb_last_bgsave_status)
+                  instant: true
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 1
+                        type: lt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: Alerting
+            execErrState: Alerting
+
+            for: 2m
+
+            annotations:
+              summary: Redis RDB background save failed
+
+            labels:
+              severity: critical
+              stack: redis
+
+            isPaused: false
+  redis-replication-broken.yaml: |
+    apiVersion: 1
+
+    groups:
+      - orgId: 1
+        name: Redis
+        folder: Infrastructure
+        interval: 1m
+
+        rules:
+          - uid: redisreplicationbroken
+
+            title: Redis Replication Broken
+
+            condition: C
+
+            data:
+              - refId: A
+                relativeTimeRange:
+                  from: 600
+                  to: 0
+                datasourceUid: ffom74f70o2rkb
+                model:
+                  editorMode: code
+                  expr: min(redis_master_link_up)
+                  instant: true
+                  intervalMs: 1000
+                  legendFormat: __auto
+                  maxDataPoints: 43200
+                  range: false
+                  refId: A
+
+              - refId: C
+                datasourceUid: __expr__
+                model:
+                  conditions:
+                    - evaluator:
+                        params:
+                          - 1
+                        type: lt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                          - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+
+                  datasource:
+                    type: __expr__
+                    uid: __expr__
+
+                  expression: A
+                  intervalMs: 1000
+                  maxDataPoints: 43200
+                  refId: C
+                  type: threshold
+
+            noDataState: Alerting
+            execErrState: Alerting
+
+            for: 2m
+
+            annotations:
+              summary: One or more Redis replicas lost connection to the master
+
+            labels:
+              severity: critical
+              stack: redis
+
+            isPaused: false
+kind: ConfigMap
+metadata:
+  name: grafana-alerting-postgres
+  namespace: monitoring

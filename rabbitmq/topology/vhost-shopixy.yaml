@@ -1,0 +1,11 @@
+apiVersion: rabbitmq.com/v1beta1
+kind: Vhost
+metadata:
+  name: shopixy
+  namespace: rabbitmq
+
+spec:
+  name: shopixy
+
+  rabbitmqClusterReference:
+    name: rabbitmq

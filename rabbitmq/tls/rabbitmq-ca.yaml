@@ -1,0 +1,21 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+
+metadata:
+  name: rabbitmq-ca
+  namespace: rabbitmq
+
+spec:
+  isCA: true
+
+  commonName: rabbitmq-ca
+
+  secretName: rabbitmq-ca-secret
+
+  privateKey:
+    algorithm: RSA
+    size: 4096
+
+  issuerRef:
+    name: rabbitmq-selfsigned
+    kind: ClusterIssuer

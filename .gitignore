@@ -1,0 +1,53 @@
+# Secrets
+**/*secret*.yaml
+**/*.env
+**/*.env.example.local
+**/bootstrap.env
+**/mongo-keyfile
+
+# Backups
+**/backups/
+**/*.tar.gz
+**/*.sql
+**/*.sql.gz
+**/*.manifest
+postgresql-backup/backups/
+postgresql/backups/
+
+mongo-native/backups/
+
+redis/backups/
+
+rabbitmq/backups/
+
+# Logs
+**/logs/
+
+# Archives
+*.tar.gz
+*.sql
+*.sql.gz
+*.manifest
+
+
+# Logs
+**/logs/
+**/*.log
+
+# Generated Files
+**/generated/
+**/rendered.yaml
+**/current-cluster.yaml
+**/cluster-backup*.yaml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Temp
+*.tmp
+*.bak

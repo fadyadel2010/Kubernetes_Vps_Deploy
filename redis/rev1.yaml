@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+data:
+  spec:
+    template:
+      $patch: replace
+      metadata:
+        annotations:
+          redis.opstreelabs.in: "true"
+          redis.opstreelabs.instance: redis
+        labels:
+          app: redis
+          redis_setup_type: replication
+          role: replication
+      spec:
+        containers:
+        - env:
+          - name: PERSISTENCE_ENABLED
+            value: "true"
+          - name: REDIS_ADDR
+            value: redis://localhost:6379
+          - name: REDIS_PORT
+            value: "6379"
+          - name: SERVER_MODE
+            value: replication
+          - name: SETUP_MODE
+            value: replication
+          image: quay.io/opstree/redis:v7.0.15
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            exec:
+              command:
+              - sh
+              - -ec
+              - |-
+                RESP="$(redis-cli -h $(hostname) -p ${REDIS_PORT} ping)"
+                [ "$RESP" = "PONG" ]
+            failureThreshold: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: redis
+          readinessProbe:
+            exec:
+              command:
+              - sh
+              - -ec
+              - |-
+                RESP="$(redis-cli -h $(hostname) -p ${REDIS_PORT} ping)"
+                [ "$RESP" = "PONG" ]
+            failureThreshold: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /data
+            name: redis
+        - env:
+          - name: REDIS_ADDR
+            value: redis://localhost:6379
+          image: quay.io/opstree/redis-exporter
+          imagePullPolicy: Always
+          name: redis-exporter
+          ports:
+          - containerPort: 9121
+            name: redis-exporter
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - emptyDir: {}
+          name: config
+kind: ControllerRevision
+metadata:
+  annotations:
+    banzaicloud.com/last-applied: UEsDBBQACAAIAAAAAAAAAAAAAAAAAAAAAAAIAAAAb3JpZ2luYWzUVV9v2zYQ/yrCIQ8tIMV2kjazgD50sVYUaBJB9rqHODDO1DkmRpEsedJqBPruAyXHVZyiw4A9rE8ij/fnd7/7o0dAKz+T89JoSAGt9aNmAjH8KXUJKcwZmTa1mhNDDBUxlsgI6SOg1oaRpdE+XB2V0p8a69kRKVz7UxkcsqsJ4u++ekYtCNL+EdoYFK5Jdd7Q2sPD3nrliWu74p3tbaySogsfFIw6FrYxaKxo4CVcvUUxlJm/NLmCNuRIC/KQ3h0R0gP/HvxRM1kT4xnEIIxmZ5QiB2lI+MBeEeyKZ1CPQNUy6F2KC9ycl5NkvCmnycXF27Pkl/OJSKZivN5MNxckhID2vo3BWxI93Z1TD+l5DJ4UCTYuPFTIYvvpvyQyRCXXSEE3A+zJlrBU5INbpsoqZOri/0QtMuAzlBClJtf3AOmm++6rlWfF/ON8kd1cZavs5v2vn7IZxNCgqukpgTY+aBfZ7ON89X42KwZKHcB0NFJGoNoaz+nb88vpS7P8tlgMzI6V5lnxOStW17ez7JnzYeMPlBe/5z/UvY9BVvgQ5F9q3J1KM9pXYNQDbi5Px6eTNxCDkg1p8j53Zt1Vmr4+UVdVGNr9DvwWYkhIQAxFNs/fLeHkVd8tQsko2UYnr0LqAd7rKLHRyeO3pNvISv3weglLfRct4SQ4WEL0LlpCfnvzYQnRPdy3L8faEZbyfwHMkTe169bIYxtDY1Rd0bWpNfdNVYVjjryFFEbdjBwlEyb8Re/9q276p3om9NUax+SOQg/l4dADPgxFbhxDOp2cTX5g5gwbYRSksLjKOyjPCAmCnpL9iFWWdzPperL2XoXRG/kQiGhjqG2JTHN2yPSwG5J6pVBWi/3W2ZP7E+2d47J/W0MoBHl/bcouKygIyz+cZLoNcI4YBUdfavLcnT0b19f9zQfZbban9iuD8DepyO88U9VFY+R6X5ThFbBBqXCtqDj8Xsbx4F8zbtu/AwAA//9QSwcIPM0LW+ICAAAxCAAAUEsBAhQAFAAIAAgAAAAAADzNC1viAgAAMQgAAAgAAAAAAAAAAAAAAAAAAAAAAG9yaWdpbmFsUEsFBgAAAAABAAEANgAAABgDAAAAAA==
+    redis.opstreelabs.in: "true"
+    redis.opstreelabs.instance: redis
+  creationTimestamp: "2026-06-11T16:27:43Z"
+  labels:
+    app: redis
+    controller.kubernetes.io/hash: b54898cd6
+    redis_setup_type: replication
+    role: replication
+  name: redis-b54898cd6
+  namespace: redis
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: StatefulSet
+    name: redis
+    uid: 4824ef23-091b-44db-98ad-3d955c5309a1
+  resourceVersion: "105211"
+  uid: 4cfcc278-289e-4095-8673-c5ccf1efc2c9
+revision: 1

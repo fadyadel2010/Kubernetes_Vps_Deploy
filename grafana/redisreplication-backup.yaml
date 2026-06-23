@@ -1,0 +1,44 @@
+apiVersion: redis.redis.opstreelabs.in/v1beta2
+kind: RedisReplication
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"redis.redis.opstreelabs.in/v1beta2","kind":"RedisReplication","metadata":{"annotations":{},"name":"redis","namespace":"redis"},"spec":{"clusterSize":3,"kubernetesConfig":{"image":"quay.io/opstree/redis:v7.0.15","redisSecret":{"key":"password","name":"redis-auth"},"service":{"serviceType":"ClusterIP"}},"redisExporter":{"enabled":true,"image":"quay.io/opstree/redis-exporter"},"storage":{"volumeClaimTemplate":{"spec":{"accessModes":["ReadWriteOnce"],"resources":{"requests":{"storage":"5Gi"}}}}}}}
+  creationTimestamp: "2026-06-11T16:27:43Z"
+  finalizers:
+  - redisReplicationFinalizer
+  generation: 4
+  name: redis
+  namespace: redis
+  resourceVersion: "569232"
+  uid: 7c4af3d1-0fd9-4462-831c-9c0bf9f4eccc
+spec:
+  clusterSize: 3
+  kubernetesConfig:
+    image: quay.io/opstree/redis:v7.0.15
+    redisSecret:
+      key: password
+      name: redis-auth
+    service:
+      serviceType: ClusterIP
+    updateStrategy: {}
+  redisExporter:
+    enabled: true
+    image: quay.io/opstree/redis-exporter
+    port: 9121
+  storage:
+    volumeClaimTemplate:
+      metadata: {}
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
+      status: {}
+    volumeMount: {}
+status:
+  connectionInfo:
+    host: redis-master.redis.svc.cluster.local
+    port: 6379
+  masterNode: redis-2

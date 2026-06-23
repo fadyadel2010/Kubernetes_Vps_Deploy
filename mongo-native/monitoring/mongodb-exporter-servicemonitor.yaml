@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: mongodb-exporter
+  namespace: prometheus
+  labels:
+    release: prometheus             # ✅ Must match your Prometheus CR's serviceMonitorSelector
+spec:
+  selector:
+    matchLabels:
+      app: mongodb-exporter
+  namespaceSelector:
+    matchNames:
+      - mongo
+  endpoints:
+    - port: metrics
+      path: /metrics                # ✅ Explicit path
+      interval: 30s
+      scrapeTimeout: 25s            # ✅ Safe headroom under interval

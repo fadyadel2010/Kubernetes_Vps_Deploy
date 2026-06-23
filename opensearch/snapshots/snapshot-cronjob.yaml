@@ -1,0 +1,100 @@
+apiVersion: batch/v1
+kind: CronJob
+
+metadata:
+  name: opensearch-snapshot
+  namespace: opensearch
+
+spec:
+  schedule: "0 */6 * * *"
+
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+
+          containers:
+            - name: snapshot
+
+              image: alpine:3.20
+
+              envFrom:
+                - secretRef:
+                    name: opensearch-snapshot-job
+
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -e
+
+                  apk add --no-cache curl jq >/dev/null
+
+                  SNAPSHOT_NAME="shopixy-$(date -u +%Y.%m.%d-%H%M)"
+
+                  echo "Creating snapshot ${SNAPSHOT_NAME}"
+
+                  curl -sk \
+                    -u "$OS_USER:$OS_PASS" \
+                    -X PUT \
+                    "https://shopixy-search:9200/_snapshot/shopixy-snapshots/${SNAPSHOT_NAME}?wait_for_completion=true"
+
+                  echo
+                  echo "Snapshot creation completed"
+
+                  RETENTION_DAYS=30
+                  MIN_KEEP=10
+
+                  NOW=$(date -u +%s)
+                  CUTOFF=$((NOW - RETENTION_DAYS * 24 * 60 * 60))
+
+                  echo "Retention policy:"
+                  echo "  Days     = ${RETENTION_DAYS}"
+                  echo "  Min Keep = ${MIN_KEEP}"
+
+                  SNAPSHOTS_JSON=$(curl -sk \
+                    -u "$OS_USER:$OS_PASS" \
+                    "https://shopixy-search:9200/_snapshot/shopixy-snapshots/_all")
+
+                  echo "$SNAPSHOTS_JSON" \
+                  | jq -r '
+                    .snapshots
+                    | sort_by(.start_time_in_millis)
+                    | reverse
+                    | .[]
+                    | [.snapshot, .start_time_in_millis]
+                    | @tsv
+                  ' > /tmp/snapshots.txt
+
+                  COUNT=$(wc -l < /tmp/snapshots.txt)
+
+                  echo "Found ${COUNT} snapshots"
+
+                  if [ "$COUNT" -le "$MIN_KEEP" ]; then
+                    echo "Nothing to delete (snapshot count <= MIN_KEEP)"
+                    exit 0
+                  fi
+
+                  tail -n +$((MIN_KEEP + 1)) /tmp/snapshots.txt | while read NAME TS
+                  do
+                    SNAP_TS=$((TS / 1000))
+
+                    if [ "$SNAP_TS" -lt "$CUTOFF" ]; then
+                      echo "Deleting old snapshot: ${NAME}"
+
+                      curl -sk \
+                        -u "$OS_USER:$OS_PASS" \
+                        -X DELETE \
+                        "https://shopixy-search:9200/_snapshot/shopixy-snapshots/${NAME}"
+
+                      echo
+                    else
+                      echo "Keeping recent snapshot: ${NAME}"
+                    fi
+                  done
+
+                  echo "Retention completed"

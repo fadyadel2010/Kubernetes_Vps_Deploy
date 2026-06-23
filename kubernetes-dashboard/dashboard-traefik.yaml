@@ -1,0 +1,9 @@
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+
+metadata:
+  name: dashboard-transport
+  namespace: kubernetes-dashboard
+
+spec:
+  insecureSkipVerify: true

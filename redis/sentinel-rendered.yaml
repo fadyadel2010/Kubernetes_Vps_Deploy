@@ -1,0 +1,52 @@
+---
+# Source: redis-sentinel/templates/redis-sentinel.yaml
+apiVersion: redis.redis.opstreelabs.in/v1beta2
+kind: RedisSentinel
+metadata:
+  name: sentinel-test
+  labels:
+    app.kubernetes.io/name: sentinel-test
+    helm.sh/chart: redis-sentinel-0.16.12
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/instance: sentinel-test
+    app.kubernetes.io/version: 0.16.12
+    app.kubernetes.io/component: middleware
+  annotations:
+    
+spec:
+  clusterSize: 3
+  # Sentinel Config
+  redisSentinelConfig:
+    redisReplicationName: redis-replication
+    masterGroupName : "myMaster"
+    redisPort:  "6379"
+    quorum: "2"
+    parallelSyncs: "1"
+    failoverTimeout: "180000"
+    downAfterMilliseconds:  "30000"
+    resolveHostnames : "no"
+    announceHostnames : "no"
+
+  kubernetesConfig:
+    image: "quay.io/opstree/redis-sentinel:v7.0.15"
+    imagePullPolicy: "IfNotPresent"
+
+  redisExporter:
+    enabled: false
+    image: "quay.io/opstree/redis-exporter:v1.44.0"
+    imagePullPolicy: "IfNotPresent"
+  podSecurityContext: 
+    fsGroup: 1000
+    runAsUser: 1000
+  livenessProbe:
+    failureThreshold: 3
+    initialDelaySeconds: 1
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 1
+  readinessProbe:
+    failureThreshold: 3
+    initialDelaySeconds: 1
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 1

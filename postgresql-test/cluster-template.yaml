@@ -1,0 +1,36 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+
+metadata:
+  name: __POSTGRES_CLUSTER_NAME__
+  namespace: postgresql
+
+spec:
+  instances: __POSTGRES_INSTANCES__
+
+  imageName: ghcr.io/cloudnative-pg/postgresql:17
+
+  primaryUpdateStrategy: unsupervised
+
+  storage:
+    size: __POSTGRES_STORAGE__
+
+  resources:
+    requests:
+      cpu: "__POSTGRES_CPU_REQUEST__"
+      memory: "__POSTGRES_MEMORY_REQUEST__"
+
+    limits:
+      cpu: "__POSTGRES_CPU_LIMIT__"
+      memory: "__POSTGRES_MEMORY_LIMIT__"
+
+  monitoring:
+    enablePodMonitor: true
+
+  bootstrap:
+    initdb:
+      database: __POSTGRES_DB__
+      owner: __POSTGRES_USER__
+
+      secret:
+        name: shopixy-postgres-secret

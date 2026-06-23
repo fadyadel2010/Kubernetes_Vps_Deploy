@@ -1,0 +1,1105 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "graphTooltip": 1,
+  "panels": [
+
+    {
+      "id": 100,
+      "type": "row",
+      "title": "🟢 Cluster Health",
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 }
+    },
+
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "MongoDB Status",
+      "description": "1 = UP, 0 = DOWN",
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 1 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "mongodb_up{job=\"mongodb-exporter\"}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "options": { "0": { "color": "red", "text": "DOWN" }, "1": { "color": "green", "text": "UP" } }, "type": "value" }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          },
+          "color": { "mode": "thresholds" }
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "auto",
+        "orientation": "auto"
+      }
+    },
+
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Healthy Members",
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 1 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "sum(mongodb_members_health{job=\"mongodb-exporter\"})",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "green", "value": 3 }
+            ]
+          },
+          "color": { "mode": "thresholds" }
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none"
+      }
+    },
+
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Primary Nodes",
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 1 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "count(mongodb_members_health{job=\"mongodb-exporter\",member_state=\"PRIMARY\"})",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 0 },
+              { "color": "green", "value": 1 }
+            ]
+          },
+          "color": { "mode": "thresholds" }
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none"
+      }
+    },
+
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Secondary Nodes",
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 1 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "count(mongodb_members_health{job=\"mongodb-exporter\",member_state=\"SECONDARY\"})",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "green", "value": 2 }
+            ]
+          },
+          "color": { "mode": "thresholds" }
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none"
+      }
+    },
+
+    {
+      "id": 20,
+      "type": "stat",
+      "title": "Replication Lag (max)",
+      "description": "Maximum lag across all secondaries in seconds",
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 1 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "max(mongodb_members_optimeDate{job=\"mongodb-exporter\", member_state=\"PRIMARY\"}) - min(mongodb_members_optimeDate{job=\"mongodb-exporter\", member_state=\"SECONDARY\"})",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 5 },
+              { "color": "red", "value": 30 }
+            ]
+          },
+          "color": { "mode": "thresholds" }
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none"
+      }
+    },
+
+    {
+      "id": 21,
+      "type": "stat",
+      "title": "Uptime",
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 1 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "mongodb_ss_uptimeMillis{job=\"mongodb-exporter\"} / 1000",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "color": { "mode": "fixed", "fixedColor": "blue" }
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none"
+      }
+    },
+
+    {
+      "id": 101,
+      "type": "row",
+      "title": "⚡ Operations & Throughput",
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 }
+    },
+
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Operations/sec by Type",
+      "description": "Rate of all MongoDB operation types per second",
+      "gridPos": { "h": 8, "w": 16, "x": 0, "y": 6 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "rate(mongodb_ss_opcounters{job=\"mongodb-exporter\"}[$__rate_interval])",
+          "legendFormat": "{{legacy_op_type}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity"
+          }
+        }
+      },
+      "options": {
+        "tooltip": { "mode": "multi", "sort": "desc" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "lastNotNull"] }
+      }
+    },
+
+    {
+      "id": 22,
+      "type": "timeseries",
+      "title": "Command Ops/sec (Replication)",
+      "description": "Replicated vs non-replicated commands",
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 6 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "rate(mongodb_ss_opcountersRepl{job=\"mongodb-exporter\"}[$__rate_interval])",
+          "legendFormat": "repl-{{legacy_op_type}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "custom": { "lineWidth": 2, "fillOpacity": 5 }
+        }
+      },
+      "options": {
+        "tooltip": { "mode": "multi", "sort": "desc" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] }
+      }
+    },
+
+    {
+      "id": 23,
+      "type": "timeseries",
+      "title": "Document Operations/sec",
+      "description": "Inserted, updated, deleted, returned documents per second",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "rate(mongodb_ss_metrics_document{job=\"mongodb-exporter\"}[$__rate_interval])",
+          "legendFormat": "{{doc_op_type}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "custom": { "lineWidth": 2, "fillOpacity": 8 }
+        }
+      },
+      "options": {
+        "tooltip": { "mode": "multi", "sort": "desc" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] }
+      }
+    },
+
+    {
+      "id": 24,
+      "type": "timeseries",
+      "title": "Query Targeting (Scanned vs Returned)",
+      "description": "High ratio = potential missing index. Ideal ratio is close to 1.",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 14 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "rate(mongodb_ss_metrics_queryExecutor{job=\"mongodb-exporter\", queryExec_type=\"scannedObjects\"}[$__rate_interval])",
+          "legendFormat": "Scanned Objects",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(mongodb_ss_metrics_document{job=\"mongodb-exporter\", doc_op_type=\"returned\"}[$__rate_interval])",
+          "legendFormat": "Returned",
+          "refId": "B"
+        },
+        {
+          "expr": "rate(mongodb_ss_metrics_queryExecutor{job=\"mongodb-exporter\", queryExec_type=\"scannedObjects\"}[$__rate_interval]) / clamp_min(rate(mongodb_ss_metrics_document{job=\"mongodb-exporter\", doc_op_type=\"returned\"}[$__rate_interval]), 1)",
+          "legendFormat": "Scan Ratio",
+          "refId": "C"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ops",
+          "custom": { "lineWidth": 2, "fillOpacity": 5 }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Scan Ratio" },
+            "properties": [
+              { "id": "unit", "value": "none" },
+              { "id": "custom.axisPlacement", "value": "right" },
+              { "id": "color", "value": { "fixedColor": "orange", "mode": "fixed" } }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "tooltip": { "mode": "multi" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] }
+      }
+    },
+
+    {
+      "id": 102,
+      "type": "row",
+      "title": "🔌 Connections & Network",
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 22 }
+    },
+
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Connections",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 23 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "mongodb_ss_connections{job=\"mongodb-exporter\",conn_type=\"current\"}",
+          "legendFormat": "Current",
+          "refId": "A"
+        },
+        {
+          "expr": "mongodb_ss_connections{job=\"mongodb-exporter\",conn_type=\"active\"}",
+          "legendFormat": "Active",
+          "refId": "B"
+        },
+        {
+          "expr": "mongodb_ss_connections{job=\"mongodb-exporter\",conn_type=\"available\"}",
+          "legendFormat": "Available",
+          "refId": "C"
+        },
+        {
+          "expr": "mongodb_ss_connections{job=\"mongodb-exporter\",conn_type=\"totalCreated\"}",
+          "legendFormat": "Total Created",
+          "refId": "D"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": { "lineWidth": 2, "fillOpacity": 8 }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Available" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "green", "mode": "fixed" } }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Current" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "yellow", "mode": "fixed" } }]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Active" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } }]
+          }
+        ]
+      },
+      "options": {
+        "tooltip": { "mode": "multi", "sort": "desc" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "lastNotNull"] }
+      }
+    },
+
+    {
+      "id": 25,
+      "type": "timeseries",
+      "title": "Network I/O",
+      "description": "Bytes in/out per second",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 23 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "rate(mongodb_ss_network_bytesIn{job=\"mongodb-exporter\"}[$__rate_interval])",
+          "legendFormat": "Bytes In",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(mongodb_ss_network_bytesOut{job=\"mongodb-exporter\"}[$__rate_interval])",
+          "legendFormat": "Bytes Out",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps",
+          "custom": { "lineWidth": 2, "fillOpacity": 10 }
+        }
+      },
+      "options": {
+        "tooltip": { "mode": "multi" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] }
+      }
+    },
+
+    {
+      "id": 103,
+      "type": "row",
+      "title": "💾 Memory & Cache",
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 31 }
+    },
+
+    {
+      "id": 26,
+      "type": "timeseries",
+      "title": "WiredTiger Cache Usage",
+      "description": "Cache bytes currently in use vs. maximum configured size",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 32 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "mongodb_ss_wt_cache_bytes{job=\"mongodb-exporter\", cache_status=\"bytes_currently_in_cache\"}",
+          "legendFormat": "In Use",
+          "refId": "A"
+        },
+        {
+          "expr": "mongodb_ss_wt_cache_bytes{job=\"mongodb-exporter\", cache_status=\"maximum_bytes_configured\"}",
+          "legendFormat": "Max Configured",
+          "refId": "B"
+        },
+        {
+          "expr": "mongodb_ss_wt_cache_bytes{job=\"mongodb-exporter\", cache_status=\"tracked_dirty_bytes_in_cache\"}",
+          "legendFormat": "Dirty Bytes",
+          "refId": "C"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": { "lineWidth": 2, "fillOpacity": 15 }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Dirty Bytes" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "orange", "mode": "fixed" } }]
+          }
+        ]
+      },
+      "options": {
+        "tooltip": { "mode": "multi" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "lastNotNull"] }
+      }
+    },
+
+    {
+      "id": 27,
+      "type": "timeseries",
+      "title": "Cache Hit Ratio",
+      "description": "Percentage of page reads served from cache. Should stay above 95%.",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 32 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "rate(mongodb_ss_wt_cache_bytes_read_into_cache{job=\"mongodb-exporter\"}[$__rate_interval])",
+          "legendFormat": "Read Into Cache/s",
+          "refId": "A"
+        },
+        {
+          "expr": "rate(mongodb_ss_wt_cache_bytes_written_from_cache{job=\"mongodb-exporter\"}[$__rate_interval])",
+          "legendFormat": "Written From Cache/s",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps",
+          "custom": { "lineWidth": 2, "fillOpacity": 8 }
+        }
+      },
+      "options": {
+        "tooltip": { "mode": "multi" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] }
+      }
+    },
+
+    {
+      "id": 28,
+      "type": "gauge",
+      "title": "Cache Usage %",
+      "description": "Percentage of WiredTiger cache currently used",
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 40 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "100 * mongodb_ss_wt_cache_bytes{job=\"mongodb-exporter\", cache_status=\"bytes_currently_in_cache\"} / clamp_min(mongodb_ss_wt_cache_bytes{job=\"mongodb-exporter\", cache_status=\"maximum_bytes_configured\"}, 1)",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 70 },
+              { "color": "red", "value": 90 }
+            ]
+          }
+        }
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] } }
+    },
+
+    {
+      "id": 29,
+      "type": "timeseries",
+      "title": "Memory Usage (Virtual / Resident)",
+      "gridPos": { "h": 8, "w": 18, "x": 6, "y": 40 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "mongodb_ss_mem_virtual{job=\"mongodb-exporter\"} * 1024 * 1024",
+          "legendFormat": "Virtual",
+          "refId": "A"
+        },
+        {
+          "expr": "mongodb_ss_mem_resident{job=\"mongodb-exporter\"} * 1024 * 1024",
+          "legendFormat": "Resident",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": { "lineWidth": 2, "fillOpacity": 10 }
+        }
+      },
+      "options": {
+        "tooltip": { "mode": "multi" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "lastNotNull"] }
+      }
+    },
+
+    {
+      "id": 104,
+      "type": "row",
+      "title": "🔒 Locks & Queues",
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 48 }
+    },
+
+    {
+      "id": 30,
+      "type": "timeseries",
+      "title": "Global Lock Queue",
+      "description": "Operations waiting for a lock. Sustained values > 0 indicate lock contention.",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 49 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "mongodb_ss_globalLock_currentQueue{job=\"mongodb-exporter\", count_type=\"readers\"}",
+          "legendFormat": "Readers Queued",
+          "refId": "A"
+        },
+        {
+          "expr": "mongodb_ss_globalLock_currentQueue{job=\"mongodb-exporter\", count_type=\"writers\"}",
+          "legendFormat": "Writers Queued",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": { "lineWidth": 2, "fillOpacity": 15 },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "red", "value": 5 }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Writers Queued" },
+            "properties": [{ "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } }]
+          }
+        ]
+      },
+      "options": {
+        "tooltip": { "mode": "multi" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "lastNotNull"] }
+      }
+    },
+
+    {
+      "id": 31,
+      "type": "timeseries",
+      "title": "Active Read / Write Clients",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 49 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "mongodb_ss_globalLock_activeClients{job=\"mongodb-exporter\", count_type=\"readers\"}",
+          "legendFormat": "Active Readers",
+          "refId": "A"
+        },
+        {
+          "expr": "mongodb_ss_globalLock_activeClients{job=\"mongodb-exporter\", count_type=\"writers\"}",
+          "legendFormat": "Active Writers",
+          "refId": "B"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": { "lineWidth": 2, "fillOpacity": 10 }
+        }
+      },
+      "options": {
+        "tooltip": { "mode": "multi" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] }
+      }
+    },
+
+    {
+      "id": 105,
+      "type": "row",
+      "title": "🗄️ Storage & Databases",
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 57 }
+    },
+
+    {
+      "id": 8,
+      "type": "stat",
+      "title": "Total Data Size",
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 58 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "sum(mongodb_dbstats_dataSize{job=\"mongodb-exporter\"})",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "color": { "mode": "fixed", "fixedColor": "blue" }
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "area"
+      }
+    },
+
+    {
+      "id": 9,
+      "type": "stat",
+      "title": "Total Storage Size",
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 58 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "sum(mongodb_dbstats_storageSize{job=\"mongodb-exporter\"})",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "color": { "mode": "fixed", "fixedColor": "purple" }
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "area"
+      }
+    },
+
+    {
+      "id": 10,
+      "type": "stat",
+      "title": "Total Index Size",
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 58 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "sum(mongodb_dbstats_indexSize{job=\"mongodb-exporter\"})",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "color": { "mode": "fixed", "fixedColor": "orange" }
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "area"
+      }
+    },
+
+    {
+      "id": 32,
+      "type": "stat",
+      "title": "Total Collections",
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 58 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "sum(mongodb_dbstats_collections{job=\"mongodb-exporter\"})",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "fixed", "fixedColor": "teal" }
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none"
+      }
+    },
+
+    {
+      "id": 33,
+      "type": "bargauge",
+      "title": "Storage Size by Database",
+      "description": "Allocated storage per database",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 62 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "mongodb_dbstats_storageSize{job=\"mongodb-exporter\"}",
+          "legendFormat": "{{database}}",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 536870912 },
+              { "color": "red", "value": 2147483648 }
+            ]
+          },
+          "color": { "mode": "thresholds" }
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "valueMode": "color"
+      }
+    },
+
+    {
+      "id": 34,
+      "type": "bargauge",
+      "title": "Index Size by Database",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 62 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "mongodb_dbstats_indexSize{job=\"mongodb-exporter\"}",
+          "legendFormat": "{{database}}",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "color": { "mode": "palette-classic" }
+        }
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "orientation": "horizontal",
+        "displayMode": "gradient"
+      }
+    },
+
+    {
+      "id": 106,
+      "type": "row",
+      "title": "🔄 Replication",
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 70 }
+    },
+
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Replica Member Health",
+      "description": "1 = healthy, 0 = unhealthy for each member",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 71 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "mongodb_members_health{job=\"mongodb-exporter\"}",
+          "legendFormat": "Member {{member_idx}} ({{member_state}})",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "max": 1,
+          "custom": { "lineWidth": 2, "fillOpacity": 20 }
+        }
+      },
+      "options": {
+        "tooltip": { "mode": "multi" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["lastNotNull"] }
+      }
+    },
+
+    {
+      "id": 35,
+      "type": "timeseries",
+      "title": "Replication Lag Over Time",
+      "description": "Tracks secondary lag in seconds. Alert if > 30s.",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 71 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "max(mongodb_members_optimeDate{job=\"mongodb-exporter\", member_state=\"PRIMARY\"}) - mongodb_members_optimeDate{job=\"mongodb-exporter\", member_state=\"SECONDARY\"}",
+          "legendFormat": "Secondary {{member_idx}} Lag",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": { "lineWidth": 2, "fillOpacity": 10 },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 5 },
+              { "color": "red", "value": 30 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "tooltip": { "mode": "multi" },
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "lastNotNull"] }
+      }
+    },
+
+    {
+      "id": 11,
+      "type": "table",
+      "title": "Replica Set Members — Full Status",
+      "description": "Instant snapshot of all replica set member states and health",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 79 },
+      "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+      "targets": [
+        {
+          "expr": "mongodb_members_health{job=\"mongodb-exporter\"}",
+          "instant": true,
+          "refId": "A",
+          "legendFormat": ""
+        }
+      ],
+      "transformations": [
+        { "id": "labelsToFields", "options": {} },
+        {
+          "id": "organize",
+          "options": {
+            "renameByName": {
+              "member_idx": "Member Index",
+              "member_state": "State",
+              "set_name": "Replica Set",
+              "Value": "Health"
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "Health" },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  { "options": { "0": { "color": "red", "text": "Unhealthy" }, "1": { "color": "green", "text": "Healthy" } }, "type": "value" }
+                ]
+              },
+              { "id": "custom.displayMode", "value": "color-background" }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "State" },
+            "properties": [
+              {
+                "id": "mappings",
+                "value": [
+                  { "options": { "PRIMARY": { "color": "green", "text": "PRIMARY" }, "SECONDARY": { "color": "blue", "text": "SECONDARY" }, "ARBITER": { "color": "yellow", "text": "ARBITER" } }, "type": "value" }
+                ]
+              },
+              { "id": "custom.displayMode", "value": "color-text" }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "sortBy": [{ "displayName": "Member Index", "desc": false }]
+      }
+    },
+
+    {
+      "id": 107,
+      "type": "row",
+      "title": "📊 Cursor & Assert Stats",
+      "collapsed": true,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 87 },
+      "panels": [
+        {
+          "id": 36,
+          "type": "timeseries",
+          "title": "Open Cursors",
+          "description": "Number of open cursors — watch for accumulating pinned or timed-out cursors",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 88 },
+          "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+          "targets": [
+            {
+              "expr": "mongodb_ss_metrics_cursor_open{job=\"mongodb-exporter\"}",
+              "legendFormat": "{{csr_type}}",
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": { "unit": "short", "custom": { "lineWidth": 2, "fillOpacity": 8 } }
+          },
+          "options": {
+            "tooltip": { "mode": "multi" },
+            "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "lastNotNull"] }
+          }
+        },
+        {
+          "id": 37,
+          "type": "timeseries",
+          "title": "Asserts per Second",
+          "description": "Non-zero regular/user asserts indicate potential issues",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 88 },
+          "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+          "targets": [
+            {
+              "expr": "rate(mongodb_ss_asserts{job=\"mongodb-exporter\"}[$__rate_interval])",
+              "legendFormat": "{{assert_type}}",
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "ops",
+              "custom": { "lineWidth": 2, "fillOpacity": 10 },
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  { "color": "green", "value": null },
+                  { "color": "red", "value": 1 }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": { "id": "byName", "options": "regular" },
+                "properties": [{ "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } }]
+              }
+            ]
+          },
+          "options": {
+            "tooltip": { "mode": "multi" },
+            "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] }
+          }
+        }
+      ]
+    }
+
+  ],
+  "refresh": "30s",
+  "schemaVersion": 41,
+  "style": "dark",
+  "tags": ["mongodb", "shopixy", "production", "replication"],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+        "definition": "label_values(mongodb_up{job=\"mongodb-exporter\"}, instance)",
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "instance",
+        "options": [],
+        "query": {
+          "query": "label_values(mongodb_up{job=\"mongodb-exporter\"}, instance)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "type": "query",
+        "label": "Instance"
+      },
+      {
+        "current": {},
+        "datasource": { "type": "prometheus", "uid": "ffom74f70o2rkb" },
+        "definition": "label_values(mongodb_dbstats_dataSize{job=\"mongodb-exporter\"}, database)",
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "database",
+        "options": [],
+        "query": {
+          "query": "label_values(mongodb_dbstats_dataSize{job=\"mongodb-exporter\"}, database)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "type": "query",
+        "label": "Database"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": ["10s", "30s", "1m", "5m", "15m", "30m", "1h"],
+    "time_options": ["5m", "15m", "1h", "6h", "12h", "24h", "2d", "7d", "30d"]
+  },
+  "timezone": "browser",
+  "title": "Shopixy MongoDB Production",
+  "version": 2
+}

@@ -1,0 +1,17 @@
+apiVersion: rabbitmq.com/v1beta1
+kind: Queue
+metadata:
+  name: orders
+  namespace: rabbitmq
+
+spec:
+  name: orders
+
+  vhost: shopixy
+
+  durable: true
+
+  type: quorum
+
+  rabbitmqClusterReference:
+    name: rabbitmq

@@ -1,0 +1,58 @@
+apiVersion: opensearch.org/v1
+kind: OpenSearchCluster
+
+metadata:
+  name: shopixy-search
+  namespace: opensearch
+
+spec:
+
+  general:
+    serviceName: shopixy-search
+    version: "2.8.0"
+    image: docker.io/opensearchproject/opensearch:2.8.0
+    setVMMaxMapCount: true
+
+  dashboards:
+    enable: true
+    replicas: 1
+    version: "2.8.0"
+    image: docker.io/opensearchproject/opensearch-dashboards:2.8.0
+
+  nodePools:
+    - component: core
+
+      replicas: 3
+
+      roles:
+        - master
+        - data
+        - ingest
+
+      diskSize: "50Gi"
+
+      jvm: "-Xms2g -Xmx2g"
+
+      persistence:
+        pvc:
+          storageClass: local-path
+          accessModes:
+            - ReadWriteOnce
+
+      resources:
+        requests:
+          cpu: "1"
+          memory: "4Gi"
+
+        limits:
+          cpu: "2"
+          memory: "4Gi"
+
+  security:
+    tls:
+      transport:
+        generate: true
+        perNode: true
+
+      http:
+        generate: true

@@ -1,0 +1,33 @@
+apiVersion: rabbitmq.com/v1beta1
+kind: RabbitmqCluster
+metadata:
+  name: rabbitmq
+  namespace: rabbitmq
+
+spec:
+  replicas: 3
+  tls:
+   secretName: rabbitmq-server-tls
+   caSecretName: rabbitmq-ca-secret
+
+  resources:
+    requests:
+      cpu: "500m"
+      memory: 4Gi
+    limits:
+      cpu: "2"
+      memory: 4Gi
+
+  persistence:
+    storageClassName: local-path
+    storage: 50Gi
+
+  rabbitmq:
+    additionalConfig: |
+      cluster_partition_handling = autoheal
+
+      vm_memory_high_watermark.relative = 0.6
+
+      disk_free_limit.relative = 1.0
+
+      collect_statistics_interval = 10000

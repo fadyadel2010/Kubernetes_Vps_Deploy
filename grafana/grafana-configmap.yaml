@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: grafana-config
+  namespace: monitoring
+
+data:
+  GF_SERVER_ROOT_URL: "http://grafana.local"
+  GF_USERS_ALLOW_SIGN_UP: "false"
+  GF_SECURITY_ALLOW_EMBEDDING: "true"

@@ -1,0 +1,32 @@
+replicaCount: 1
+
+es:
+  uri: "https://admin:NPI7POQ3FM7UXY6V2NTIC2KSLD@shopixy-search:9200"
+
+  all: true
+  indices: true
+  indices_settings: true
+  indices_mappings: true
+  shards: true
+  snapshots: true
+
+  sslSkipVerify: true
+
+serviceMonitor:
+  enabled: true
+
+  namespace: prometheus
+
+  interval: 30s
+
+  labels:
+    release: prometheus
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+  limits:
+    cpu: 250m
+    memory: 256Mi

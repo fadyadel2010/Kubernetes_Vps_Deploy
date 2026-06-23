@@ -1,0 +1,24 @@
+apiVersion: psmdb.percona.com/v1
+kind: PerconaServerMongoDB
+metadata:
+  name: mongo-test
+  namespace: default
+spec:
+  crVersion: 1.12.0
+
+  image: percona/percona-server-mongodb:4.4.29
+
+  replsets:
+    - name: rs0
+      size: 1
+      volumeSpec:
+        persistentVolumeClaim:
+          resources:
+            requests:
+              storage: 5Gi
+
+  secrets:
+    users: mongo-test-secrets
+
+  unsafeFlags:
+    replsetSize: true

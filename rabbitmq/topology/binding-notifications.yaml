@@ -1,0 +1,18 @@
+apiVersion: rabbitmq.com/v1beta1
+kind: Binding
+metadata:
+  name: notifications-binding
+  namespace: rabbitmq
+
+spec:
+  vhost: shopixy
+
+  source: shopixy.events
+
+  destination: notifications
+  destinationType: queue
+
+  routingKey: notifications.*
+
+  rabbitmqClusterReference:
+    name: rabbitmq

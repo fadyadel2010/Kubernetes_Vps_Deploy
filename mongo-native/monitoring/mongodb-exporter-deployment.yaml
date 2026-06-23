@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb-exporter
+  namespace: mongo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb-exporter
+  template:
+    metadata:
+      labels:
+        app: mongodb-exporter
+    spec:
+      containers:
+        - name: mongodb-exporter
+          image: percona/mongodb_exporter:0.40.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MONGODB_URI   # ✅ Fixed from MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-exporter-secret
+                  key: mongodb-uri
+          ports:
+            - containerPort: 9216
+              name: metrics
+          args:
+            - --collect-all
+          livenessProbe:                       # ✅ Added
+            httpGet:
+              path: /health
+              port: 9216
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:                      # ✅ Added
+            httpGet:
+              path: /health
+              port: 9216
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

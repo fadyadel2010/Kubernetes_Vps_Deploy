@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo
+  namespace: mongo
+
+spec:
+  serviceName: mongo-headless
+
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: mongo
+
+  template:
+    metadata:
+      labels:
+        app: mongo
+
+    spec:
+      terminationGracePeriodSeconds: 30
+
+      volumes:
+        - name: mongo-keyfile
+          secret:
+            secretName: mongo-keyfile
+            defaultMode: 0400
+
+      containers:
+      - name: mongo
+
+        image: percona/percona-server-mongodb:4.4.29
+
+        imagePullPolicy: IfNotPresent
+
+        command:
+          - mongod
+
+        args:
+          - --replSet=rs0
+          - --bind_ip_all
+          - --port=27017
+          - --storageEngine=wiredTiger
+
+        ports:
+          - containerPort: 27017
+            name: mongodb
+
+        resources:
+          requests:
+            cpu: "1"
+            memory: "2Gi"
+
+          limits:
+            cpu: "4"
+            memory: "8Gi"
+
+        volumeMounts:
+          - name: mongo-data
+            mountPath: /data/db
+
+          - name: mongo-keyfile
+            mountPath: /etc/mongo-keyfile
+            readOnly: true
+
+        readinessProbe:
+          tcpSocket:
+            port: 27017
+
+          initialDelaySeconds: 20
+          periodSeconds: 10
+
+        livenessProbe:
+          tcpSocket:
+            port: 27017
+
+          initialDelaySeconds: 60
+          periodSeconds: 20
+
+  volumeClaimTemplates:
+  - metadata:
+      name: mongo-data
+
+    spec:
+      accessModes:
+        - ReadWriteOnce
+
+      storageClassName: local-path
+
+      resources:
+        requests:
+          storage: 20Gi

@@ -1,0 +1,17 @@
+apiVersion: rabbitmq.com/v1beta1
+kind: Queue
+metadata:
+  name: notifications
+  namespace: rabbitmq
+
+spec:
+  name: notifications
+
+  vhost: shopixy
+
+  durable: true
+
+  type: quorum
+
+  rabbitmqClusterReference:
+    name: rabbitmq

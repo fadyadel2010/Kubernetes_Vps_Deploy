@@ -1,0 +1,163 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations:
+    banzaicloud.com/last-applied: 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
+    redis.opstreelabs.in: "true"
+    redis.opstreelabs.instance: redis
+    storageCapacity: ""
+  creationTimestamp: "2026-06-11T16:27:43Z"
+  generation: 2
+  labels:
+    app: redis
+    redis_setup_type: replication
+    role: replication
+  name: redis
+  namespace: redis
+  ownerReferences:
+  - apiVersion: redis.redis.opstreelabs.in/v1beta2
+    controller: true
+    kind: RedisReplication
+    name: redis
+    uid: 7c4af3d1-0fd9-4462-831c-9c0bf9f4eccc
+  resourceVersion: "116659"
+  uid: 4824ef23-091b-44db-98ad-3d955c5309a1
+spec:
+  persistentVolumeClaimRetentionPolicy:
+    whenDeleted: Retain
+    whenScaled: Retain
+  podManagementPolicy: OrderedReady
+  replicas: 3
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: redis
+      redis_setup_type: replication
+      role: replication
+  serviceName: redis-headless
+  template:
+    metadata:
+      annotations:
+        redis.opstreelabs.in: "true"
+        redis.opstreelabs.instance: redis
+      labels:
+        app: redis
+        redis_setup_type: replication
+        role: replication
+    spec:
+      containers:
+      - env:
+        - name: ACL_FILE_PATH
+          value: /etc/redis/user.acl
+        - name: ACL_MODE
+          value: "true"
+        - name: PERSISTENCE_ENABLED
+          value: "true"
+        - name: REDIS_ADDR
+          value: redis://localhost:6379
+        - name: REDIS_PORT
+          value: "6379"
+        - name: SERVER_MODE
+          value: replication
+        - name: SETUP_MODE
+          value: replication
+        image: quay.io/opstree/redis:v7.0.15
+        imagePullPolicy: IfNotPresent
+        livenessProbe:
+          exec:
+            command:
+            - sh
+            - -ec
+            - |-
+              RESP="$(redis-cli -h $(hostname) -p ${REDIS_PORT} ping)"
+              [ "$RESP" = "PONG" ]
+          failureThreshold: 3
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: redis
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -ec
+            - |-
+              RESP="$(redis-cli -h $(hostname) -p ${REDIS_PORT} ping)"
+              [ "$RESP" = "PONG" ]
+          failureThreshold: 3
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /data
+          name: redis
+        - mountPath: /etc/redis/user.acl
+          name: acl-secret
+          subPath: user.acl
+      - env:
+        - name: REDIS_ADDR
+          value: redis://localhost:6379
+        image: quay.io/opstree/redis-exporter
+        imagePullPolicy: Always
+        name: redis-exporter
+        ports:
+        - containerPort: 9121
+          name: redis-exporter
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/redis/user.acl
+          name: acl-secret
+          subPath: user.acl
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - emptyDir: {}
+        name: config
+      - name: acl-secret
+        secret:
+          defaultMode: 420
+          secretName: redis-acl
+  updateStrategy:
+    rollingUpdate:
+      partition: 0
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      annotations:
+        redis.opstreelabs.in: "true"
+        redis.opstreelabs.instance: redis
+      labels:
+        app: redis
+        redis_setup_type: replication
+        role: replication
+      name: redis
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 5Gi
+      volumeMode: Filesystem
+    status:
+      phase: Pending
+status:
+  availableReplicas: 2
+  collisionCount: 0
+  currentReplicas: 2
+  currentRevision: redis-b54898cd6
+  observedGeneration: 2
+  readyReplicas: 2
+  replicas: 3
+  updateRevision: redis-6db9454899
+  updatedReplicas: 1

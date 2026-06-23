@@ -1,0 +1,36 @@
+apiVersion: redis.redis.opstreelabs.in/v1beta2
+kind: RedisSentinel
+
+metadata:
+  name: redis-sentinel
+  namespace: redis
+
+spec:
+  clusterSize: 3
+
+  redisSentinelConfig:
+    redisReplicationName: redis
+
+    masterGroupName: "mymaster"
+
+    redisPort: "6379"
+
+    quorum: "2"
+
+    parallelSyncs: "1"
+
+    failoverTimeout: "180000"
+
+    downAfterMilliseconds: "30000"
+
+    redisReplicationPassword:
+      secretKeyRef:
+        name: redis-auth
+        key: password
+
+  kubernetesConfig:
+    image: quay.io/opstree/redis-sentinel:v7.0.15
+
+  redisExporter:
+    enabled: true
+    image: quay.io/opstree/redis-exporter

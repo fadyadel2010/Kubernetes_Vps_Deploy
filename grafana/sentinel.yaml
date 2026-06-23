@@ -1,0 +1,44 @@
+apiVersion: redis.redis.opstreelabs.in/v1beta2
+kind: RedisSentinel
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"redis.redis.opstreelabs.in/v1beta2","kind":"RedisSentinel","metadata":{"annotations":{},"name":"redis-sentinel","namespace":"redis"},"spec":{"clusterSize":3,"kubernetesConfig":{"image":"quay.io/opstree/redis-sentinel:v7.0.15"},"redisExporter":{"enabled":true,"image":"quay.io/opstree/redis-exporter"},"redisSentinelConfig":{"downAfterMilliseconds":"30000","failoverTimeout":"180000","masterGroupName":"mymaster","parallelSyncs":"1","quorum":"2","redisPort":"6379","redisReplicationName":"redis","redisReplicationPassword":{"secretKeyRef":{"key":"password","name":"redis-auth"}}}}}
+  creationTimestamp: "2026-06-11T18:54:48Z"
+  finalizers:
+  - redisSentinelFinalizer
+  generation: 2
+  name: redis-sentinel
+  namespace: redis
+  resourceVersion: "126670"
+  uid: 3d0f1149-eb47-4b3a-b5a4-d3ea241e402c
+spec:
+  clusterSize: 3
+  kubernetesConfig:
+    image: quay.io/opstree/redis-sentinel:v7.0.15
+    resources:
+      requests:
+        cpu: 250m
+        memory: 512Mi
+      limits:
+        cpu: "2"
+        memory: 4Gi
+    updateStrategy: {}
+  redisExporter:
+    enabled: true
+    image: quay.io/opstree/redis-exporter
+    port: 9121
+  redisSentinelConfig:
+    announceHostnames: "no"
+    downAfterMilliseconds: "30000"
+    failoverTimeout: "180000"
+    masterGroupName: mymaster
+    parallelSyncs: "1"
+    quorum: "2"
+    redisPort: "6379"
+    redisReplicationName: redis
+    redisReplicationPassword:
+      secretKeyRef:
+        key: password
+        name: redis-auth
+    resolveHostnames: "no"
