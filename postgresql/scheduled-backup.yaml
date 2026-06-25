@@ -1,9 +1,12 @@
 apiVersion: postgresql.cnpg.io/v1
-kind: Backup
+kind: ScheduledBackup
 metadata:
-  name: first-real-backup
+  name: shopixy-postgres-scheduled
   namespace: postgresql
 spec:
+  schedule: "0 0 2 * * *"
+  backupOwnerReference: self
   cluster:
     name: shopixy-postgres
   method: barmanObjectStore
+  immediate: false

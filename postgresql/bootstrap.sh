@@ -1,11 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 
-export KUBECONFIG=${KUBECONFIG:-$HOME/.kube/config}
+export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
 # Pass KUBECONFIG explicitly through sudo so it is not lost in the root environment
 KUBECTL="sudo -E kubectl --kubeconfig=${KUBECONFIG}"
-HELM="sudo -E helm"
+HELM="sudo -E helm --kubeconfig=${KUBECONFIG}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -163,6 +163,40 @@ done
 if [ "$PGBOUNCER_READY" = "false" ]; then
   echo "WARNING: PgBouncer did not become ready within timeout, continuing..."
 fi
+
+echo ""
+
+############################################
+# PgBouncer External Access
+############################################
+
+echo "Creating PgBouncer NodePort..."
+
+$KUBECTL apply -f "$SCRIPT_DIR/pgbouncer-nodeport.yaml"
+
+echo ""
+
+echo "Waiting for NodePort Service..."
+
+for i in $(seq 1 30); do
+
+  TYPE=$($KUBECTL get svc shopixy-pgbouncer-nodeport \
+    -n postgresql \
+    -o jsonpath='{.spec.type}' 2>/dev/null || true)
+
+  if [ "$TYPE" = "NodePort" ]; then
+    break
+  fi
+
+  sleep 2
+
+done
+
+NODE_PORT=$($KUBECTL get svc shopixy-pgbouncer-nodeport \
+  -n postgresql \
+  -o jsonpath='{.spec.ports[0].nodePort}')
+
+echo "PgBouncer External Port: ${NODE_PORT}"
 
 echo ""
 
@@ -375,4 +409,18 @@ $KUBECTL get backup          -n postgresql
 echo ""
 
 $KUBECTL get scheduledbackup -n postgresql
+echo ""
+
+echo ""
+echo "================================="
+echo "External Connection"
+echo "================================="
+
+NODE_IP=$(hostname -I | awk '{print $1}')
+
+echo "Host : ${NODE_IP}"
+echo "Port : ${NODE_PORT}"
+echo "User : shopixy"
+echo "DB   : shopixy"
+
 echo ""

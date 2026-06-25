@@ -1,11 +1,15 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
+
 metadata:
   name: shopixy-postgres
   namespace: postgresql
+
 spec:
   instances: 3
-  imageName: ghcr.io/cloudnative-pg/postgresql:17
+
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.4
+
   primaryUpdateStrategy: unsupervised
 
   storage:
@@ -15,6 +19,7 @@ spec:
     requests:
       cpu: "500m"
       memory: "1Gi"
+
     limits:
       cpu: "2"
       memory: "4Gi"
@@ -26,39 +31,6 @@ spec:
     initdb:
       database: shopixy
       owner: shopixy
+
       secret:
         name: shopixy-postgres-secret
-
-  backup:
-    retentionPolicy: "7d"
-    barmanObjectStore:
-      destinationPath: "s3://postgres-backups"
-      endpointURL: "http://minio.minio.svc.cluster.local:9000"
-      s3Credentials:
-        accessKeyId:
-          name: minio-backup-secret
-          key: ACCESS_KEY_ID
-        secretAccessKey:
-          name: minio-backup-secret
-          key: ACCESS_SECRET_KEY
-      data:
-        compression: gzip
-      wal:
-        compression: gzip
-
-  postgresql:
-    parameters:
-      archive_mode: "on"
-      archive_timeout: "5min"
-      wal_level: logical
-      wal_log_hints: "on"
-      wal_keep_size: "512MB"
-      max_replication_slots: "32"
-      wal_receiver_timeout: "5s"
-      wal_sender_timeout: "5s"
-      shared_buffers: "1GB"
-      effective_cache_size: "3GB"
-      work_mem: "8MB"
-      maintenance_work_mem: "256MB"
-      random_page_cost: "1.1"
-      autovacuum: "on"

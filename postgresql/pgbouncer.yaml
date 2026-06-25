@@ -1,5 +1,6 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Pooler
+
 metadata:
   name: shopixy-pgbouncer
   namespace: postgresql

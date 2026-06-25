@@ -8,7 +8,7 @@ metadata:
 spec:
   instances: __POSTGRES_INSTANCES__
 
-  imageName: ghcr.io/cloudnative-pg/postgresql:17
+  imageName: ghcr.io/cloudnative-pg/postgresql:18.4
 
   primaryUpdateStrategy: unsupervised
 
