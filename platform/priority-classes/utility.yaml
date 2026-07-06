@@ -1,0 +1,9 @@
+priority:
+  name: utility
+
+value: 30000
+
+globalDefault: true
+
+description: >
+  Default priority for utility workloads.

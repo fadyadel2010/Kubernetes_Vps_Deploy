@@ -5,6 +5,10 @@ metadata:
   namespace: monitoring
 spec:
   replicas: 1
+  strategy:
+   type: Recreate
+  revisionHistoryLimit: 3
+  progressDeadlineSeconds: 600
   selector:
     matchLabels:
       app: grafana
@@ -80,14 +84,20 @@ spec:
           volumeMounts:
             - name: grafana-storage
               mountPath: /var/lib/grafana
-            - name: grafana-alerting-postgres
+            - name: grafana-alerting
               mountPath: /etc/grafana/provisioning/alerting
+              readOnly: true
+            - name: grafana-datasources
+              mountPath: /etc/grafana/provisioning/datasources
               readOnly: true
 
       volumes:
         - name: grafana-storage
           persistentVolumeClaim:
             claimName: grafana-storage
-        - name: grafana-alerting-postgres
+        - name: grafana-alerting
           configMap:
-            name: grafana-alerting-postgres
+            name: grafana-alerting
+        - name: grafana-datasources
+          configMap:
+            name: grafana-datasources

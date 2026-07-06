@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ResourceQuota
+
+metadata:
+  name: {{ service }}-quota
+  namespace: {{ namespace }}
+
+spec:
+  hard:
+
+    requests.cpu: {{ requests_cpu }}
+    requests.memory: {{ requests_memory }}
+
+    limits.cpu: {{ limits_cpu }}
+    limits.memory: {{ limits_memory }}

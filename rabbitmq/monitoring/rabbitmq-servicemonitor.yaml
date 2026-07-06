@@ -17,12 +17,10 @@ spec:
       app.kubernetes.io/name: rabbitmq
 
   endpoints:
-    - port: prometheus-tls
+    - port: prometheus
       path: /metrics
       interval: 15s
       scrapeTimeout: 10s
 
-      scheme: https
+      scheme: http
 
-      tlsConfig:
-        insecureSkipVerify: true

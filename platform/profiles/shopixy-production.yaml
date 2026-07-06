@@ -1,0 +1,48 @@
+platform:
+  name: shopixy
+  profile: production
+  version: "1.0"
+
+environment:
+  name: production
+  datacenter: Dallas
+  virtualization: kvm
+
+cluster:
+  distribution: k3s
+  topology: single-node
+
+infrastructure:
+
+  compute:
+    cpu:
+      cores: 8
+      frequency: "3.1GHz"
+
+    memory:
+      total: 40Gi
+
+  storage:
+    total: 200Gi
+    type: nvme
+
+network:
+
+  loadBalancer:
+    provider: metallb
+
+    addressPool:
+      start: 192.168.1.190
+      end: 192.168.1.210
+
+  ingress:
+    controller: traefik
+
+observability:
+
+  prometheus: true
+  grafana: true
+
+backup:
+
+  enabled: true

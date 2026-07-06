@@ -1,0 +1,23 @@
+profile:
+  name: critical-medium
+
+description: >
+  LimitRange profile for medium critical workloads.
+
+limits:
+
+  defaultRequest:
+    cpu: 500m
+    memory: 2Gi
+
+  default:
+    cpu: 1000m
+    memory: 4Gi
+
+  max:
+    cpu: 2000m
+    memory: 6Gi
+
+  min:
+    cpu: 250m
+    memory: 512Mi

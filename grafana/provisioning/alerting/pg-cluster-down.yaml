@@ -13,7 +13,7 @@ groups:
               relativeTimeRange:
                 from: 600
                 to: 0
-              datasourceUid: ffom74f70o2rkb
+              datasourceUid: prometheus
               model:
                 editorMode: code
                 expr: min(cnpg_collector_up{cluster="shopixy-postgres"})
@@ -56,5 +56,3 @@ groups:
             severity: critical
             stack: postgres
           isPaused: false
-          notification_settings:
-            receiver: empty

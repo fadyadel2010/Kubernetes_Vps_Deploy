@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+
+metadata:
+  name: mongodb-exporter
+  namespace: mongo
+
+spec:
+  podSelector:
+    matchLabels:
+      app: mongodb-exporter
+
+  policyTypes:
+    - Ingress
+
+  ingress:
+    - from:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 9216

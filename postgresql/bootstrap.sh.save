@@ -1,0 +1,181 @@
+#!/bin/bash
+set -euo pipefail
+
+export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+
+# Pass KUBECONFIG explicitly through sudo so it is not lost in the root environment
+KUBECTL="sudo -E kubectl --kubeconfig=${KUBECONFIG}"
+HELM="sudo -E helm --kubeconfig=${KUBECONFIG}"
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+echo "================================="
+echo "Shopixy PostgreSQL Bootstrap v2"
+echo "================================="
+echo ""
+
+############################################
+# Generate Configs
+############################################
+
+echo "Generating Secrets..."
+chmod +x "$SCRIPT_DIR/generate-configs.sh" && sudo bash "$SCRIPT_DIR/generate-configs.sh"
+echo ""
+
+############################################
+# Install CNPG
+############################################
+
+echo "Installing CloudNativePG..."
+
+$HELM repo add cnpg https://cloudnative-pg.github.io/charts 2>/dev/null || true
+
+$HELM repo update
+
+$HELM upgrade --install cnpg \
+  cnpg/cloudnative-pg \
+  -n cnpg-system \
+  --create-namespace \
+  --wait
+
+echo ""
+
+############################################
+# Wait Operator
+############################################
+
+echo "Waiting for CNPG Operator..."
+
+$KUBECTL rollout status \
+  deployment/cnpg-cloudnative-pg \
+  -n cnpg-system \
+  --timeout=300s
+
+echo ""
+
+############################################
+# Namespace
+############################################
+
+echo "Creating Namespace..."
+
+$KUBECTL apply -f "$SCRIPT_DIR/namespace.yaml"
+
+echo ""
+
+############################################
+# Secrets
+############################################
+
+echo "Creating Database Secret..."
+
+$KUBECTL apply -f "$SCRIPT_DIR/secret.yaml"
+
+echo ""
+
+echo "Creating MinIO Backup Secret..."
+
+
+$KUBECTL apply -f "$SCRIPT_DIR/minio-backup-secret.yaml"
+
+echo ""
+
+############################################
+# PostgreSQL Cluster
+############################################
+
+echo "Creating PostgreSQL Cluster..."
+
+$KUBECTL apply -f "$SCRIPT_DIR/cluster.yaml"
+
+echo ""
+
+############################################
+# Wait PostgreSQL Pods
+############################################
+
+echo "Waiting for PostgreSQL Pods..."
+
+$KUBECTL wait \
+  --for=condition=Ready \
+  pod \
+  -l cnpg.io/cluster=shopixy-postgres \
+  -n postgresql \
+  --timeout=900s
+
+echo "[OK] PostgreSQL Pods Ready"
+
+echo
+
+############################################
+# Verify Primary
+############################################
+
+PRIMARY=$(
+$KUBECTL get cluster shopixy-postgres \
+  -n postgresql \
+  -o jsonpath='{.status.currentPrimary}'
+)
+
+if [ -z "${PRIMARY:-}" ]
+then
+    echo "[ERROR] PostgreSQL Primary not found"
+    exit 1
+fi
+
+echo "[OK] Primary : $PRIMARY"
+
+echo
+
+############################################
+# PgBouncer
+############################################
+
+echo "Creating PgBouncer..."
+
+$KUBECTL apply -f "$SCRIPT_DIR/pgbouncer.yaml"
+
+echo ""
+
+echo "Waiting for PgBouncer..."
+
+# Poll until at least one PgBouncer pod exists before running kubectl wait,
+# because kubectl wait errors immediately on "no matching resources found".
+PGBOUNCER_READY=false
+for i in $(seq 1 36); do
+  POD_COUNT=$($KUBECTL get pods \
+    -l cnpg.io/poolerName=shopixy-pgbouncer \
+    -n postgresql \
+    --no-headers 2>/dev/null | wc -l | tr -d ' ')
+  if [ "${POD_COUNT}" -gt 0 ]; then
+    $KUBECTL wait pod \
+      -l cnpg.io/poolerName=shopixy-pgbouncer \
+      -n postgresql \
+      --for=condition=Ready \
+      --timeout=120s && PGBOUNCER_READY=true && break
+  fi
+  echo "  PgBouncer pods not yet scheduled, retrying in 5s... (${i}/36)"
+  sleep 5
+done
+
+if [ "$PGBOUNCER_READY" = "false" ]; then
+  echo "WARNING: PgBouncer did not become ready within timeout, continuing..."
+fi
+
+echo ""
+
+
+############################################
+# Scheduled Backup
+############################################
+
+echo "Creating Scheduled Backup..."
+
+$KUBECTL apply -f "$SCRIPT_DIR/scheduled-backup.yaml"
+
+echo ""
+
+echo "================================="
+echo "Bootstrap Completed Successfully"
+echo "================================="
+echo ""

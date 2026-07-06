@@ -1,0 +1,2295 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: cert-manager
+      meta.helm.sh/release-namespace: cert-manager
+    creationTimestamp: "2026-06-12T15:11:55Z"
+    labels:
+      app: cert-manager
+      app.kubernetes.io/component: controller
+      app.kubernetes.io/instance: cert-manager
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: cert-manager
+      app.kubernetes.io/version: v1.20.2
+      helm.sh/chart: cert-manager-v1.20.2
+    name: cert-manager
+    namespace: cert-manager
+    resourceVersion: "172709"
+    uid: 94c19686-13e1-4d60-8e40-bdd8471ad777
+  spec:
+    clusterIP: 10.43.170.141
+    clusterIPs:
+    - 10.43.170.141
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: tcp-prometheus-servicemonitor
+      port: 9402
+      protocol: TCP
+      targetPort: http-metrics
+    selector:
+      app.kubernetes.io/component: controller
+      app.kubernetes.io/instance: cert-manager
+      app.kubernetes.io/name: cert-manager
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: cert-manager
+      meta.helm.sh/release-namespace: cert-manager
+    creationTimestamp: "2026-06-12T15:11:55Z"
+    labels:
+      app: cainjector
+      app.kubernetes.io/component: cainjector
+      app.kubernetes.io/instance: cert-manager
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: cainjector
+      app.kubernetes.io/version: v1.20.2
+      helm.sh/chart: cert-manager-v1.20.2
+    name: cert-manager-cainjector
+    namespace: cert-manager
+    resourceVersion: "172717"
+    uid: a6f90ab7-842c-4a54-9840-33e4483fe75d
+  spec:
+    clusterIP: 10.43.30.170
+    clusterIPs:
+    - 10.43.30.170
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http-metrics
+      port: 9402
+      protocol: TCP
+      targetPort: 9402
+    selector:
+      app.kubernetes.io/component: cainjector
+      app.kubernetes.io/instance: cert-manager
+      app.kubernetes.io/name: cainjector
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: cert-manager
+      meta.helm.sh/release-namespace: cert-manager
+    creationTimestamp: "2026-06-12T15:11:55Z"
+    labels:
+      app: webhook
+      app.kubernetes.io/component: webhook
+      app.kubernetes.io/instance: cert-manager
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: webhook
+      app.kubernetes.io/version: v1.20.2
+      helm.sh/chart: cert-manager-v1.20.2
+    name: cert-manager-webhook
+    namespace: cert-manager
+    resourceVersion: "172711"
+    uid: c4c7c8a9-1104-47ab-a9e7-7c960261cc35
+  spec:
+    clusterIP: 10.43.123.207
+    clusterIPs:
+    - 10.43.123.207
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: https
+    - name: metrics
+      port: 9402
+      protocol: TCP
+      targetPort: http-metrics
+    selector:
+      app.kubernetes.io/component: webhook
+      app.kubernetes.io/instance: cert-manager
+      app.kubernetes.io/name: webhook
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: cnpg
+      meta.helm.sh/release-namespace: cnpg-system
+    creationTimestamp: "2026-06-09T13:48:12Z"
+    labels:
+      app.kubernetes.io/instance: cnpg
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: cloudnative-pg
+      app.kubernetes.io/version: 1.29.1
+      helm.sh/chart: cloudnative-pg-0.28.3
+    name: cnpg-webhook-service
+    namespace: cnpg-system
+    resourceVersion: "490370"
+    uid: 9c588060-e42e-4d09-83c0-334538373355
+  spec:
+    clusterIP: 10.43.69.75
+    clusterIPs:
+    - 10.43.69.75
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: webhook-server
+      port: 443
+      protocol: TCP
+      targetPort: webhook-server
+    selector:
+      app.kubernetes.io/instance: cnpg
+      app.kubernetes.io/name: cloudnative-pg
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: "2026-06-08T17:47:22Z"
+    labels:
+      component: apiserver
+      provider: kubernetes
+    name: kubernetes
+    namespace: default
+    resourceVersion: "200"
+    uid: d0aba825-d941-4f80-8aec-814403a9b113
+  spec:
+    clusterIP: 10.43.0.1
+    clusterIPs:
+    - 10.43.0.1
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: 6443
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      objectset.rio.cattle.io/applied: H4sIAAAAAAAA/4ySQYvbMBCF/0p5Z9m142TjFfRQdimUQgmk7aXsQZYnG9W2JKRJSgj+70WJl00b0vZm8958vHmjI5Q33yhE4ywk9iUEOmNbSKwp7I0mCAzEqlWsII9Q1jpWbJyN6dc1P0hzJM6DcblWzD3lxr01iQBxU3c/LYXsed9BoqvihbIvxZtPxrbv3rets/9EWDUQJLQL1Nr4X/bolU4z3a6hLB4i0wABH9xAvKVdTG7vAkPivlxUV1rUQfkE4LAjjAK9aqg/1dHVMVPev8DPidJnsMR0mtb9LjKFLE71Tpg/bdNeDy7Q4+f1X/baqriFRKNpVlez+7ouy+W8UkVV36lmURab2eZuSZvlfDYv9GKZ8k7si4i3ahkFoiedVptyf1xBoizyeZUXeVlAvAoR8vul9CRg/Ac1mP6wcr3Rh/SojH3uac1Kd6lXFzhNHV8indOcy19Up+LZaddD4uvjCqO4dGas/S33l4ff3ANxMPqVne567X8SiNSTZhduHHMcx18BAAD//5X9LCMyAwAA
+      objectset.rio.cattle.io/id: ""
+      objectset.rio.cattle.io/owner-gvk: k3s.cattle.io/v1, Kind=Addon
+      objectset.rio.cattle.io/owner-name: coredns
+      objectset.rio.cattle.io/owner-namespace: kube-system
+      prometheus.io/port: "9153"
+      prometheus.io/scrape: "true"
+    creationTimestamp: "2026-06-08T17:47:25Z"
+    labels:
+      k8s-app: kube-dns
+      kubernetes.io/cluster-service: "true"
+      kubernetes.io/name: CoreDNS
+      objectset.rio.cattle.io/hash: bce283298811743a0386ab510f2f67ef74240c57
+    name: kube-dns
+    namespace: kube-system
+    resourceVersion: "288"
+    uid: d55f5224-f784-41d4-a004-dcb9df17db1d
+  spec:
+    clusterIP: 10.43.0.10
+    clusterIPs:
+    - 10.43.0.10
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: dns
+      port: 53
+      protocol: UDP
+      targetPort: 53
+    - name: dns-tcp
+      port: 53
+      protocol: TCP
+      targetPort: 53
+    - name: metrics
+      port: 9153
+      protocol: TCP
+      targetPort: 9153
+    selector:
+      k8s-app: kube-dns
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      objectset.rio.cattle.io/applied: H4sIAAAAAAAA/4SQQWsbMRCF/0p5Z9nNep04FfRQWnopBUNKL6WHWe04VleWhGa8xZj970UbFxLaJCchvZn3vqczKPvvXMSnCIuxgcHgYw+LOy6jdwyDAyv1pAR7BsWYlNSnKPWaul/sVFiXxaelI9XAS5/e+uoA86yefkcui/txgMXQyiNlbMybLz727z/0fYqvWkQ6MGxFLN7JQriMXObjgf31bcnkqsVw7HghJ1E+YDII1HGYO1ahRFaWuujCUfRRhIWWY016Onbh+vqE6wWePckeFnTdt527uWrc7abhZtXuqF11q83uev2uu2HabK46t1tTJfxvdTy8P1NKMrtayefPdPDhtE3BuxMstoV3XD4dKdwpuQEGORUV2B/nvzl71SwXAXa9bg1ySZpcCrD49nELA6Vyz7qdJy4L008D4cBOU5l/81YWlPO/4NM0/QkAAP//sKxN444CAAA
+      objectset.rio.cattle.io/id: ""
+      objectset.rio.cattle.io/owner-gvk: k3s.cattle.io/v1, Kind=Addon
+      objectset.rio.cattle.io/owner-name: metrics-server-service
+      objectset.rio.cattle.io/owner-namespace: kube-system
+    creationTimestamp: "2026-06-08T17:47:27Z"
+    labels:
+      kubernetes.io/cluster-service: "true"
+      kubernetes.io/name: Metrics-server
+      objectset.rio.cattle.io/hash: a5d3bc601c871e123fa32b27f549b6ea770bcf4a
+    name: metrics-server
+    namespace: kube-system
+    resourceVersion: "365"
+    uid: f800301a-8adf-438d-badb-ee6e3cbc4d77
+  spec:
+    clusterIP: 10.43.11.153
+    clusterIPs:
+    - 10.43.11.153
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: PreferDualStack
+    ports:
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: https
+    selector:
+      k8s-app: metrics-server
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: prometheus
+      meta.helm.sh/release-namespace: prometheus
+    creationTimestamp: "2026-06-09T12:25:58Z"
+    labels:
+      app: kube-prometheus-stack-coredns
+      app.kubernetes.io/instance: prometheus
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/part-of: kube-prometheus-stack
+      app.kubernetes.io/version: 86.2.1
+      chart: kube-prometheus-stack-86.2.1
+      heritage: Helm
+      jobLabel: coredns
+      release: prometheus
+    name: prometheus-kube-prometheus-coredns
+    namespace: kube-system
+    resourceVersion: "6355"
+    uid: d4e71f3a-40f6-4bdf-b336-212e43d88c3d
+  spec:
+    clusterIP: None
+    clusterIPs:
+    - None
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http-metrics
+      port: 9153
+      protocol: TCP
+      targetPort: 9153
+    selector:
+      k8s-app: kube-dns
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: prometheus
+      meta.helm.sh/release-namespace: prometheus
+    creationTimestamp: "2026-06-09T12:25:58Z"
+    labels:
+      app: kube-prometheus-stack-kube-controller-manager
+      app.kubernetes.io/instance: prometheus
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/part-of: kube-prometheus-stack
+      app.kubernetes.io/version: 86.2.1
+      chart: kube-prometheus-stack-86.2.1
+      heritage: Helm
+      jobLabel: kube-controller-manager
+      release: prometheus
+    name: prometheus-kube-prometheus-kube-controller-manager
+    namespace: kube-system
+    resourceVersion: "6357"
+    uid: e7ca2d0d-9f6f-4b08-881e-11d8d36609a3
+  spec:
+    clusterIP: None
+    clusterIPs:
+    - None
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http-metrics
+      port: 10257
+      protocol: TCP
+      targetPort: 10257
+    selector:
+      component: kube-controller-manager
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: prometheus
+      meta.helm.sh/release-namespace: prometheus
+    creationTimestamp: "2026-06-09T12:25:58Z"
+    labels:
+      app: kube-prometheus-stack-kube-etcd
+      app.kubernetes.io/instance: prometheus
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/part-of: kube-prometheus-stack
+      app.kubernetes.io/version: 86.2.1
+      chart: kube-prometheus-stack-86.2.1
+      heritage: Helm
+      jobLabel: kube-etcd
+      release: prometheus
+    name: prometheus-kube-prometheus-kube-etcd
+    namespace: kube-system
+    resourceVersion: "6356"
+    uid: 26eddbd4-39d2-4cbb-a6ff-e19ca7c292c0
+  spec:
+    clusterIP: None
+    clusterIPs:
+    - None
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http-metrics
+      port: 2381
+      protocol: TCP
+      targetPort: 2381
+    selector:
+      component: etcd
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: prometheus
+      meta.helm.sh/release-namespace: prometheus
+    creationTimestamp: "2026-06-09T12:25:58Z"
+    labels:
+      app: kube-prometheus-stack-kube-proxy
+      app.kubernetes.io/instance: prometheus
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/part-of: kube-prometheus-stack
+      app.kubernetes.io/version: 86.2.1
+      chart: kube-prometheus-stack-86.2.1
+      heritage: Helm
+      jobLabel: kube-proxy
+      release: prometheus
+    name: prometheus-kube-prometheus-kube-proxy
+    namespace: kube-system
+    resourceVersion: "6354"
+    uid: 9dd31b0c-e974-4de9-95aa-ed3209ce7a92
+  spec:
+    clusterIP: None
+    clusterIPs:
+    - None
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http-metrics
+      port: 10249
+      protocol: TCP
+      targetPort: 10249
+    selector:
+      k8s-app: kube-proxy
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: prometheus
+      meta.helm.sh/release-namespace: prometheus
+    creationTimestamp: "2026-06-09T12:25:58Z"
+    labels:
+      app: kube-prometheus-stack-kube-scheduler
+      app.kubernetes.io/instance: prometheus
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/part-of: kube-prometheus-stack
+      app.kubernetes.io/version: 86.2.1
+      chart: kube-prometheus-stack-86.2.1
+      heritage: Helm
+      jobLabel: kube-scheduler
+      release: prometheus
+    name: prometheus-kube-prometheus-kube-scheduler
+    namespace: kube-system
+    resourceVersion: "6358"
+    uid: c7e1e42d-f72e-4571-b3dc-879161a25752
+  spec:
+    clusterIP: None
+    clusterIPs:
+    - None
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http-metrics
+      port: 10259
+      protocol: TCP
+      targetPort: 10259
+    selector:
+      component: kube-scheduler
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: "2026-06-09T12:26:11Z"
+    labels:
+      app.kubernetes.io/managed-by: prometheus-operator
+      app.kubernetes.io/name: kubelet
+      k8s-app: kubelet
+    name: prometheus-kube-prometheus-kubelet
+    namespace: kube-system
+    resourceVersion: "6524"
+    uid: aa54e54e-9200-4f83-94d2-eacfea4fb985
+  spec:
+    clusterIP: None
+    clusterIPs:
+    - None
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    - IPv6
+    ipFamilyPolicy: RequireDualStack
+    ports:
+    - name: https-metrics
+      port: 10250
+      protocol: TCP
+      targetPort: 10250
+    - name: cadvisor
+      port: 4194
+      protocol: TCP
+      targetPort: 4194
+    - name: http-metrics
+      port: 10255
+      protocol: TCP
+      targetPort: 10255
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: traefik
+      meta.helm.sh/release-namespace: kube-system
+    creationTimestamp: "2026-06-08T17:48:13Z"
+    finalizers:
+    - service.kubernetes.io/load-balancer-cleanup
+    labels:
+      app.kubernetes.io/instance: traefik-kube-system
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: traefik
+      helm.sh/chart: traefik-39.0.701_up39.0.7
+    name: traefik
+    namespace: kube-system
+    resourceVersion: "791751"
+    uid: 44154e0f-45bb-4abb-b573-edc3829c877f
+  spec:
+    allocateLoadBalancerNodePorts: true
+    clusterIP: 10.43.139.192
+    clusterIPs:
+    - 10.43.139.192
+    externalTrafficPolicy: Cluster
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: PreferDualStack
+    ports:
+    - name: web
+      nodePort: 32694
+      port: 80
+      protocol: TCP
+      targetPort: web
+    - name: websecure
+      nodePort: 31163
+      port: 443
+      protocol: TCP
+      targetPort: websecure
+    selector:
+      app.kubernetes.io/instance: traefik-kube-system
+      app.kubernetes.io/name: traefik
+    sessionAffinity: None
+    type: LoadBalancer
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: kubernetes-dashboard
+      meta.helm.sh/release-namespace: kubernetes-dashboard
+    creationTimestamp: "2026-06-09T19:02:54Z"
+    labels:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/instance: kubernetes-dashboard
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: kubernetes-dashboard-api
+      app.kubernetes.io/part-of: kubernetes-dashboard
+      app.kubernetes.io/version: 1.14.0
+      helm.sh/chart: kubernetes-dashboard-7.14.0
+    name: kubernetes-dashboard-api
+    namespace: kubernetes-dashboard
+    resourceVersion: "23751"
+    uid: 681439f3-7585-414e-8890-15a5fafe2990
+  spec:
+    clusterIP: 10.43.107.175
+    clusterIPs:
+    - 10.43.107.175
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: api
+      port: 8000
+      protocol: TCP
+      targetPort: 8000
+    selector:
+      app.kubernetes.io/instance: kubernetes-dashboard
+      app.kubernetes.io/name: kubernetes-dashboard-api
+      app.kubernetes.io/part-of: kubernetes-dashboard
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: kubernetes-dashboard
+      meta.helm.sh/release-namespace: kubernetes-dashboard
+    creationTimestamp: "2026-06-09T19:02:54Z"
+    labels:
+      app.kubernetes.io/component: auth
+      app.kubernetes.io/instance: kubernetes-dashboard
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: kubernetes-dashboard-auth
+      app.kubernetes.io/part-of: kubernetes-dashboard
+      app.kubernetes.io/version: 1.4.0
+      helm.sh/chart: kubernetes-dashboard-7.14.0
+    name: kubernetes-dashboard-auth
+    namespace: kubernetes-dashboard
+    resourceVersion: "23745"
+    uid: 1f3b895b-fc6a-4fcf-b852-786f802c7014
+  spec:
+    clusterIP: 10.43.246.233
+    clusterIPs:
+    - 10.43.246.233
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: auth
+      port: 8000
+      protocol: TCP
+      targetPort: 8000
+    selector:
+      app.kubernetes.io/instance: kubernetes-dashboard
+      app.kubernetes.io/name: kubernetes-dashboard-auth
+      app.kubernetes.io/part-of: kubernetes-dashboard
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: kubernetes-dashboard
+      meta.helm.sh/release-namespace: kubernetes-dashboard
+    creationTimestamp: "2026-06-09T19:02:54Z"
+    finalizers:
+    - service.kubernetes.io/load-balancer-cleanup
+    labels:
+      app.kubernetes.io/instance: kubernetes-dashboard
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: kong
+      app.kubernetes.io/version: "3.9"
+      enable-metrics: "true"
+      helm.sh/chart: kong-2.52.0
+    name: kubernetes-dashboard-kong-proxy
+    namespace: kubernetes-dashboard
+    resourceVersion: "788808"
+    uid: 9e7e0d7f-c159-4491-8528-cb27a5ecc1cb
+  spec:
+    allocateLoadBalancerNodePorts: true
+    clusterIP: 10.43.164.88
+    clusterIPs:
+    - 10.43.164.88
+    externalTrafficPolicy: Cluster
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: kong-proxy-tls
+      nodePort: 30526
+      port: 443
+      protocol: TCP
+      targetPort: 8443
+    selector:
+      app.kubernetes.io/component: app
+      app.kubernetes.io/instance: kubernetes-dashboard
+      app.kubernetes.io/name: kong
+    sessionAffinity: None
+    type: LoadBalancer
+  status:
+    loadBalancer:
+      ingress:
+      - ip: 192.168.1.50
+        ipMode: VIP
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: kubernetes-dashboard
+      meta.helm.sh/release-namespace: kubernetes-dashboard
+    creationTimestamp: "2026-06-09T19:02:54Z"
+    labels:
+      app.kubernetes.io/component: metrics-scraper
+      app.kubernetes.io/instance: kubernetes-dashboard
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: kubernetes-dashboard-metrics-scraper
+      app.kubernetes.io/part-of: kubernetes-dashboard
+      app.kubernetes.io/version: 1.2.2
+      helm.sh/chart: kubernetes-dashboard-7.14.0
+    name: kubernetes-dashboard-metrics-scraper
+    namespace: kubernetes-dashboard
+    resourceVersion: "23759"
+    uid: 800d1c97-6e20-48dd-b690-1ffe652e0d63
+  spec:
+    clusterIP: 10.43.147.177
+    clusterIPs:
+    - 10.43.147.177
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - port: 8000
+      protocol: TCP
+      targetPort: 8000
+    selector:
+      app.kubernetes.io/instance: kubernetes-dashboard
+      app.kubernetes.io/name: kubernetes-dashboard-metrics-scraper
+      app.kubernetes.io/part-of: kubernetes-dashboard
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: kubernetes-dashboard
+      meta.helm.sh/release-namespace: kubernetes-dashboard
+    creationTimestamp: "2026-06-09T19:02:54Z"
+    labels:
+      app.kubernetes.io/component: web
+      app.kubernetes.io/instance: kubernetes-dashboard
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: kubernetes-dashboard-web
+      app.kubernetes.io/part-of: kubernetes-dashboard
+      app.kubernetes.io/version: 1.7.0
+      helm.sh/chart: kubernetes-dashboard-7.14.0
+    name: kubernetes-dashboard-web
+    namespace: kubernetes-dashboard
+    resourceVersion: "23743"
+    uid: ce2fe00f-3985-4959-95e3-331f6b13ff36
+  spec:
+    clusterIP: 10.43.217.81
+    clusterIPs:
+    - 10.43.217.81
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: web
+      port: 8000
+      protocol: TCP
+      targetPort: 8000
+    selector:
+      app.kubernetes.io/instance: kubernetes-dashboard
+      app.kubernetes.io/name: kubernetes-dashboard-web
+      app.kubernetes.io/part-of: kubernetes-dashboard
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: "2026-06-08T19:43:00Z"
+    labels:
+      app: nginx
+    name: nginx
+    namespace: lab
+    resourceVersion: "2993"
+    uid: bee18af4-0384-4a2f-9db5-b72504ea4b1b
+  spec:
+    clusterIP: 10.43.220.16
+    clusterIPs:
+    - 10.43.220.16
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 80
+    selector:
+      app: nginx
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"minio","namespace":"minio"},"spec":{"ports":[{"name":"api","port":9000,"targetPort":9000},{"name":"console","port":9001,"targetPort":9001}],"selector":{"app":"minio"},"type":"ClusterIP"}}
+    creationTimestamp: "2026-06-09T15:01:57Z"
+    name: minio
+    namespace: minio
+    resourceVersion: "12597"
+    uid: 41fb4668-2679-4ac6-8ea3-5dd572a6a647
+  spec:
+    clusterIP: 10.43.213.31
+    clusterIPs:
+    - 10.43.213.31
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: api
+      port: 9000
+      protocol: TCP
+      targetPort: 9000
+    - name: console
+      port: 9001
+      protocol: TCP
+      targetPort: 9001
+    selector:
+      app: minio
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"mongo-headless","namespace":"mongo-bootstrap-test"},"spec":{"clusterIP":"None","ports":[{"name":"mongodb","port":27017,"targetPort":27017}],"selector":{"app":"mongo"}}}
+    creationTimestamp: "2026-06-10T20:49:05Z"
+    name: mongo-headless
+    namespace: mongo-bootstrap-test
+    resourceVersion: "76948"
+    uid: 6dec1187-9f80-44e4-9214-04a3b57b063f
+  spec:
+    clusterIP: None
+    clusterIPs:
+    - None
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: mongodb
+      port: 27017
+      protocol: TCP
+      targetPort: 27017
+    selector:
+      app: mongo
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"mongo-headless","namespace":"mongo"},"spec":{"clusterIP":"None","ports":[{"name":"mongodb","port":27017,"targetPort":27017}],"selector":{"app":"mongo"}}}
+    creationTimestamp: "2026-06-10T13:35:33Z"
+    name: mongo-headless
+    namespace: mongo
+    resourceVersion: "34528"
+    uid: 0868a3f9-cada-41d5-af86-a71c56a4d2bc
+  spec:
+    clusterIP: None
+    clusterIPs:
+    - None
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: mongodb
+      port: 27017
+      protocol: TCP
+      targetPort: 27017
+    selector:
+      app: mongo
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{"prometheus.io/path":"/metrics","prometheus.io/port":"9216","prometheus.io/scrape":"true"},"labels":{"app":"mongodb-exporter"},"name":"mongodb-exporter","namespace":"mongo"},"spec":{"ports":[{"name":"metrics","port":9216,"protocol":"TCP","targetPort":9216}],"selector":{"app":"mongodb-exporter"},"type":"ClusterIP"}}
+      prometheus.io/path: /metrics
+      prometheus.io/port: "9216"
+      prometheus.io/scrape: "true"
+    creationTimestamp: "2026-06-11T12:39:26Z"
+    labels:
+      app: mongodb-exporter
+    name: mongodb-exporter
+    namespace: mongo
+    resourceVersion: "81870"
+    uid: 7d38dab4-72b7-4586-9a91-5db4b9b02572
+  spec:
+    clusterIP: 10.43.146.93
+    clusterIPs:
+    - 10.43.146.93
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: metrics
+      port: 9216
+      protocol: TCP
+      targetPort: 9216
+    selector:
+      app: mongodb-exporter
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"grafana","namespace":"monitoring"},"spec":{"ports":[{"port":3000,"targetPort":3000}],"selector":{"app":"grafana"},"type":"ClusterIP"}}
+    creationTimestamp: "2026-06-08T20:12:31Z"
+    name: grafana
+    namespace: monitoring
+    resourceVersion: "3601"
+    uid: 9a39fc09-af6b-4ecd-aca1-3f1d4daa1e46
+  spec:
+    clusterIP: 10.43.240.110
+    clusterIPs:
+    - 10.43.240.110
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - port: 3000
+      protocol: TCP
+      targetPort: 3000
+    selector:
+      app: grafana
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: opensearch-operator
+      meta.helm.sh/release-namespace: opensearch-system
+    creationTimestamp: "2026-06-14T16:38:55Z"
+    labels:
+      app.kubernetes.io/instance: opensearch-operator
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: opensearch-operator
+      app.kubernetes.io/version: 3.0.0-alpha
+      helm.sh/chart: opensearch-operator-3.0.2
+    name: opensearch-operator
+    namespace: opensearch-system
+    resourceVersion: "268186"
+    uid: 9f25eef5-8760-40b9-b1e7-674fab726bd0
+  spec:
+    clusterIP: 10.43.103.34
+    clusterIPs:
+    - 10.43.103.34
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: https
+      port: 8443
+      protocol: TCP
+      targetPort: https
+    selector:
+      app.kubernetes.io/instance: opensearch-operator
+      app.kubernetes.io/name: opensearch-operator
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: opensearch-operator
+      meta.helm.sh/release-namespace: opensearch-system
+    creationTimestamp: "2026-06-14T16:38:55Z"
+    labels:
+      app.kubernetes.io/instance: opensearch-operator
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: opensearch-operator
+      app.kubernetes.io/version: 3.0.0-alpha
+      control-plane: controller-manager
+      helm.sh/chart: opensearch-operator-3.0.2
+    name: opensearch-operator-webhook-service
+    namespace: opensearch-system
+    resourceVersion: "268189"
+    uid: 3811dc54-a290-43cb-96dc-4e433c54372b
+  spec:
+    clusterIP: 10.43.146.248
+    clusterIPs:
+    - 10.43.146.248
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: webhook
+      port: 443
+      protocol: TCP
+      targetPort: 9443
+    selector:
+      app.kubernetes.io/instance: opensearch-operator
+      app.kubernetes.io/name: opensearch-operator
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: opensearch-exporter
+      meta.helm.sh/release-namespace: opensearch
+    creationTimestamp: "2026-06-15T12:25:46Z"
+    labels:
+      app.kubernetes.io/instance: opensearch-exporter
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: prometheus-elasticsearch-exporter
+      app.kubernetes.io/version: v1.10.0
+      helm.sh/chart: prometheus-elasticsearch-exporter-7.2.1
+    name: opensearch-exporter-prometheus-elasticsearch-exporter
+    namespace: opensearch
+    resourceVersion: "326339"
+    uid: 56de606f-2b1e-41fc-ab28-7fdf8a07853a
+  spec:
+    clusterIP: 10.43.89.163
+    clusterIPs:
+    - 10.43.89.163
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http
+      port: 9108
+      protocol: TCP
+      targetPort: 9108
+    selector:
+      app.kubernetes.io/instance: opensearch-exporter
+      app.kubernetes.io/name: prometheus-elasticsearch-exporter
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      opensearch.org/last-applied: UEsDBBQACAAIAAAAAAAAAAAAAAAAAAAAAAAIAAAAb3JpZ2luYWyckk9v4jAQxb/LnJ1dSJYsyXHZO2hZ9VJxcJwJRBjbGk9oq8jfvXL4k0JVIfUWz7z3y5vR9CBd+4TkW2ughOMUBOxbU0MJa6RjqxAEHJBlLVlC2YOWFWofv6xD41GS2v2wtP05PhOlO89IUILfWde+viWnBgQBRh7wc+NU906q2BxRIMC+GKR/2CChUeihfL7LfJdjGKHSVu2X0fkXNfIgZOpQgLKGyWod450q53GXDs16wCzO8b8O27XRUWdpkU6rIsEGm+RXjnUyb+ZVMldVPSuy3/k0rSBsggDvUMWVOUt8mcCtyLJVVkMJO2bnx//FJ4hBDWWRTiYC3Cj+v1iBAJa0RV5dJUH0FzuTNH4wXxnZY0Z2wzggU6v8SMgfE/IbAin5wT177J5NwkaAR42KLX33wuK2WXI3nKi2sv4jtTQqavsQwnsAAAD//1BLBwhpvKhkTAEAAPACAABQSwECFAAUAAgACAAAAAAAabyoZEwBAADwAgAACAAAAAAAAAAAAAAAAAAAAAAAb3JpZ2luYWxQSwUGAAAAAAEAAQA2AAAAggEAAAAA
+    creationTimestamp: "2026-06-14T16:57:48Z"
+    labels:
+      opensearch.org/opensearch-cluster: shopixy-search
+    name: shopixy-search
+    namespace: opensearch
+    ownerReferences:
+    - apiVersion: opensearch.org/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: OpenSearchCluster
+      name: shopixy-search
+      uid: d32921b9-efef-46ed-8f8b-8cbd5937612b
+    resourceVersion: "272748"
+    uid: d1e9a850-76b8-41fe-a06a-d5ad24fbba73
+  spec:
+    clusterIP: 10.43.109.87
+    clusterIPs:
+    - 10.43.109.87
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - appProtocol: https
+      name: http
+      port: 9200
+      protocol: TCP
+      targetPort: 9200
+    - name: transport
+      port: 9300
+      protocol: TCP
+      targetPort: 9300
+    - name: metrics
+      port: 9600
+      protocol: TCP
+      targetPort: 9600
+    - name: rca
+      port: 9650
+      protocol: TCP
+      targetPort: 9650
+    selector:
+      opensearch.org/opensearch-cluster: shopixy-search
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      opensearch.org/last-applied: UEsDBBQACAAIAAAAAAAAAAAAAAAAAAAAAAAIAAAAb3JpZ2luYWy8UsGu0zAQ/Jc9O5AmUBofKRcuNKKIC+rBcTZtVNdr2ZsCivzvyGnaSEXwbu+Wzc6MZ0Y7gnL9d/ShJwsSrisQcO5tCxL26K+9RhBwQVatYgVyBKMaNCF9kUMbUHl9ekP++HYZM22GwOhBQjiR63/9zm4LEP8hWWrRERmQoMkjRAFWXfAvkWza3pbBKZ0Qi0x64qdF/xU79Gg1BpA/nkI+eZgyN4b0eZeYn9AgT0D2AwrQZNmTMSnP7c/cz86h3U8y2znvPxyDgKFPjLYsqmLVVBl22GXv1thmm27TZBvdtO+r8sN6VTQQD1FAcKhTx3OTn2uQ8IVsyu3I8z2Uqz0x6am0E7MLi4U0zmiQVZHnAtwC/ratQQArf0SuH5AoxjudvbJhIj80ypc1yjyPBwEBDWom/xpXkspixcN0koZU+1EZZXXSHWOMfwIAAP//UEsHCHaz51JOAQAA4AIAAFBLAQIUABQACAAIAAAAAAB2s+dSTgEAAOACAAAIAAAAAAAAAAAAAAAAAAAAAABvcmlnaW5hbFBLBQYAAAAAAQABADYAAACEAQAAAAA=
+    creationTimestamp: "2026-06-14T16:57:48Z"
+    labels:
+      opensearch.org/opensearch-cluster: shopixy-search
+      opensearch.org/opensearch-nodepool: core
+    name: shopixy-search-core
+    namespace: opensearch
+    ownerReferences:
+    - apiVersion: opensearch.org/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: OpenSearchCluster
+      name: shopixy-search
+      uid: d32921b9-efef-46ed-8f8b-8cbd5937612b
+    resourceVersion: "272766"
+    uid: 273b52fd-39f8-4a21-95af-c2809d8fab99
+  spec:
+    clusterIP: None
+    clusterIPs:
+    - None
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - appProtocol: https
+      name: http
+      port: 9200
+      protocol: TCP
+      targetPort: 9200
+    - name: transport
+      port: 9300
+      protocol: TCP
+      targetPort: 9300
+    selector:
+      opensearch.org/opensearch-cluster: shopixy-search
+      opensearch.org/opensearch-nodepool: core
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      opensearch.org/last-applied: UEsDBBQACAAIAAAAAAAAAAAAAAAAAAAAAAAIAAAAb3JpZ2luYWyckcFu8jAQhN9lzg7/HygUciy99AQqVS8VB8fekAhjW/aGFqG8e+WEtqhVL71Z65nd+XbPkL55phAbZ1HgmENg31iNAhsKx0YRBA7EUkuWKM4wsiQT08t5spFkUPVImTYyhZGWsS6dDDqiQKydb95O2aBBJ2DlgX58ZFemQRK9VEn3NQAC7tVSeKSKAllFEcXLt+hXcVzY/etJSuPUfpWc92SIeyGHlgSUsxycMRQ+KhfqlSe76dssByj8khsCbZMcejJejPNykVFFVXYzI53Nq3mZzVWpp4vJ7Swfl+i2nUD0pNLmvAs8EFw618weoq+jmM7+5wI+OHbKGRR4Wq4hwDLsiNefkm4rEMmQYhf+dg4++TT8wvmwTrXIktv+vMZJfSeNtCrt6Nx13XsAAAD//1BLBwg/Uh6dMQEAACwCAABQSwECFAAUAAgACAAAAAAAP1IenTEBAAAsAgAACAAAAAAAAAAAAAAAAAAAAAAAb3JpZ2luYWxQSwUGAAAAAAEAAQA2AAAAZwEAAAAA
+    creationTimestamp: "2026-06-14T16:57:51Z"
+    labels:
+      opensearch.cluster.dashboards: shopixy-search
+    name: shopixy-search-dashboards
+    namespace: opensearch
+    ownerReferences:
+    - apiVersion: opensearch.org/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: OpenSearchCluster
+      name: shopixy-search
+      uid: d32921b9-efef-46ed-8f8b-8cbd5937612b
+    resourceVersion: "272828"
+    uid: 88f42c71-b03f-4082-8251-f91cfa1ee126
+  spec:
+    clusterIP: 10.43.54.153
+    clusterIPs:
+    - 10.43.54.153
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http
+      port: 5601
+      protocol: TCP
+      targetPort: 5601
+    selector:
+      opensearch.cluster.dashboards: shopixy-search
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      opensearch.org/last-applied: UEsDBBQACAAIAAAAAAAAAAAAAAAAAAAAAAAIAAAAb3JpZ2luYWyckk9v4jAQxb/LOzu7/NllSW5beukFEK16qTg49gQijMeyHVoU5btXTqKiquqlt2TmN+P3nt3iTFFqGSWKFkaWZEL6Ykc2kPTq+Iv94fftN1OmCZE8CoQju/rtmg0NdAJWnulLI9N1UHwhf8VABCdVwm5LIcCvlvyOKvJkFQUULy2kq5/Jh5rtJ7pXdJlCoDSsTps0eU+GYg9G35CAYhs9G5OEDpVTbTUKbBzZx37NajTyjWwINHWa0PNZPpuWeUYVVdmfBelsWS3LbKlK/Tef/1tMZyW6fScQHKkU3hjRwxYF1mwJAo59HEyNh0UvbUjVsYkin08mAs5zZMUGBZ5WWwhE6Q8Utx9ItxdwTWnqcFxz3JHU1/9aewohpTZ4DWRIRfY/vcnkJcrY9E/BsNR30kirEtt2XfceAAD//1BLBwg6Tu7RPQEAADUCAABQSwECFAAUAAgACAAAAAAAOk7u0T0BAAA1AgAACAAAAAAAAAAAAAAAAAAAAAAAb3JpZ2luYWxQSwUGAAAAAAEAAQA2AAAAcwEAAAAA
+    creationTimestamp: "2026-06-14T16:57:48Z"
+    labels:
+      opensearch.org/opensearch-cluster: shopixy-search
+    name: shopixy-search-discovery
+    namespace: opensearch
+    ownerReferences:
+    - apiVersion: opensearch.org/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: OpenSearchCluster
+      name: shopixy-search
+      uid: d32921b9-efef-46ed-8f8b-8cbd5937612b
+    resourceVersion: "272750"
+    uid: f668e0a5-63a8-4c87-b787-7087f34e5b3c
+  spec:
+    clusterIP: None
+    clusterIPs:
+    - None
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: transport
+      port: 9300
+      protocol: TCP
+      targetPort: 9300
+    publishNotReadyAddresses: true
+    selector:
+      opensearch.org/opensearch-cluster: shopixy-search
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      cnpg.io/lastAppliedSpec: '{"ports":[{"name":"pgbouncer","protocol":"TCP","port":5432,"targetPort":"pgbouncer"}],"selector":{"cnpg.io/poolerName":"shopixy-pgbouncer"},"type":"ClusterIP"}'
+      cnpg.io/poolerSpecHash: 68f676cddc
+    creationTimestamp: "2026-06-25T13:28:16Z"
+    labels:
+      app.kubernetes.io/component: pooler
+      app.kubernetes.io/instance: shopixy-postgres
+      app.kubernetes.io/managed-by: cloudnative-pg
+      app.kubernetes.io/name: postgresql
+      cnpg.io/cluster: shopixy-postgres
+      cnpg.io/podRole: pooler
+      cnpg.io/poolerName: shopixy-pgbouncer
+    name: shopixy-pgbouncer
+    namespace: postgresql
+    ownerReferences:
+    - apiVersion: postgresql.cnpg.io/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: Pooler
+      name: shopixy-pgbouncer
+      uid: 74620ddb-ffae-44c7-88ce-0d64d05de1c3
+    resourceVersion: "722906"
+    uid: 30caa1e1-10dc-4f8f-afee-1c08230b8486
+  spec:
+    clusterIP: 10.43.88.102
+    clusterIPs:
+    - 10.43.88.102
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: pgbouncer
+      port: 5432
+      protocol: TCP
+      targetPort: pgbouncer
+    selector:
+      cnpg.io/poolerName: shopixy-pgbouncer
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      cnpg.io/lastAppliedSpec: '{"ports":[{"name":"postgres","protocol":"TCP","port":5432,"targetPort":5432}],"selector":{"cnpg.io/cluster":"shopixy-postgres","cnpg.io/podRole":"instance"},"type":"ClusterIP"}'
+      cnpg.io/operatorVersion: 1.29.1
+    creationTimestamp: "2026-06-25T13:25:39Z"
+    labels:
+      app.kubernetes.io/component: database
+      app.kubernetes.io/instance: shopixy-postgres
+      app.kubernetes.io/managed-by: cloudnative-pg
+      app.kubernetes.io/name: postgresql
+      app.kubernetes.io/version: "18"
+      cnpg.io/cluster: shopixy-postgres
+    name: shopixy-postgres-r
+    namespace: postgresql
+    ownerReferences:
+    - apiVersion: postgresql.cnpg.io/v1
+      controller: true
+      kind: Cluster
+      name: shopixy-postgres
+      uid: f9e73559-b827-4ecc-8a04-1ed7c176bfe7
+    resourceVersion: "722008"
+    uid: 0da6ad95-a7a8-4f53-b793-97dd5763cb59
+  spec:
+    clusterIP: 10.43.244.196
+    clusterIPs:
+    - 10.43.244.196
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: postgres
+      port: 5432
+      protocol: TCP
+      targetPort: 5432
+    selector:
+      cnpg.io/cluster: shopixy-postgres
+      cnpg.io/podRole: instance
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      cnpg.io/lastAppliedSpec: '{"ports":[{"name":"postgres","protocol":"TCP","port":5432,"targetPort":5432}],"selector":{"cnpg.io/cluster":"shopixy-postgres","cnpg.io/instanceRole":"replica"},"type":"ClusterIP"}'
+      cnpg.io/operatorVersion: 1.29.1
+    creationTimestamp: "2026-06-25T13:25:39Z"
+    labels:
+      app.kubernetes.io/component: database
+      app.kubernetes.io/instance: shopixy-postgres
+      app.kubernetes.io/managed-by: cloudnative-pg
+      app.kubernetes.io/name: postgresql
+      app.kubernetes.io/version: "18"
+      cnpg.io/cluster: shopixy-postgres
+    name: shopixy-postgres-ro
+    namespace: postgresql
+    ownerReferences:
+    - apiVersion: postgresql.cnpg.io/v1
+      controller: true
+      kind: Cluster
+      name: shopixy-postgres
+      uid: f9e73559-b827-4ecc-8a04-1ed7c176bfe7
+    resourceVersion: "722012"
+    uid: 3fdddb14-cb6f-4a2c-a5a2-baea7b01393e
+  spec:
+    clusterIP: 10.43.137.157
+    clusterIPs:
+    - 10.43.137.157
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: postgres
+      port: 5432
+      protocol: TCP
+      targetPort: 5432
+    selector:
+      cnpg.io/cluster: shopixy-postgres
+      cnpg.io/instanceRole: replica
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      cnpg.io/lastAppliedSpec: '{"ports":[{"name":"postgres","protocol":"TCP","port":5432,"targetPort":5432}],"selector":{"cnpg.io/cluster":"shopixy-postgres","cnpg.io/instanceRole":"primary"},"type":"ClusterIP"}'
+      cnpg.io/operatorVersion: 1.29.1
+    creationTimestamp: "2026-06-25T13:25:39Z"
+    labels:
+      app.kubernetes.io/component: database
+      app.kubernetes.io/instance: shopixy-postgres
+      app.kubernetes.io/managed-by: cloudnative-pg
+      app.kubernetes.io/name: postgresql
+      app.kubernetes.io/version: "18"
+      cnpg.io/cluster: shopixy-postgres
+    name: shopixy-postgres-rw
+    namespace: postgresql
+    ownerReferences:
+    - apiVersion: postgresql.cnpg.io/v1
+      controller: true
+      kind: Cluster
+      name: shopixy-postgres
+      uid: f9e73559-b827-4ecc-8a04-1ed7c176bfe7
+    resourceVersion: "722016"
+    uid: c129a164-9b32-4e6d-ad42-c542e6be617f
+  spec:
+    clusterIP: 10.43.227.41
+    clusterIPs:
+    - 10.43.227.41
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: postgres
+      port: 5432
+      protocol: TCP
+      targetPort: 5432
+    selector:
+      cnpg.io/cluster: shopixy-postgres
+      cnpg.io/instanceRole: primary
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: prometheus
+      meta.helm.sh/release-namespace: prometheus
+    creationTimestamp: "2026-06-09T12:25:58Z"
+    labels:
+      app: kube-prometheus-stack-operator
+      app.kubernetes.io/component: prometheus-operator
+      app.kubernetes.io/instance: prometheus
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: kube-prometheus-stack-prometheus-operator
+      app.kubernetes.io/part-of: kube-prometheus-stack
+      app.kubernetes.io/version: 86.2.1
+      chart: kube-prometheus-stack-86.2.1
+      heritage: Helm
+      release: prometheus
+    name: prometheus-kube-prometheus-operator
+    namespace: prometheus
+    resourceVersion: "6377"
+    uid: f60304a8-c0a5-40ae-a512-d4752c83204e
+  spec:
+    clusterIP: 10.43.28.89
+    clusterIPs:
+    - 10.43.28.89
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: https
+    selector:
+      app: kube-prometheus-stack-operator
+      release: prometheus
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: prometheus
+      meta.helm.sh/release-namespace: prometheus
+    creationTimestamp: "2026-06-09T12:25:58Z"
+    labels:
+      app: kube-prometheus-stack-prometheus
+      app.kubernetes.io/instance: prometheus
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/part-of: kube-prometheus-stack
+      app.kubernetes.io/version: 86.2.1
+      chart: kube-prometheus-stack-86.2.1
+      heritage: Helm
+      release: prometheus
+      self-monitor: "true"
+    name: prometheus-kube-prometheus-prometheus
+    namespace: prometheus
+    resourceVersion: "6371"
+    uid: dc5da2b4-04b6-4494-8e3f-b044118867e4
+  spec:
+    clusterIP: 10.43.97.66
+    clusterIPs:
+    - 10.43.97.66
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http-web
+      port: 9090
+      protocol: TCP
+      targetPort: 9090
+    - appProtocol: http
+      name: reloader-web
+      port: 8080
+      protocol: TCP
+      targetPort: reloader-web
+    selector:
+      app.kubernetes.io/name: prometheus
+      operator.prometheus.io/name: prometheus-kube-prometheus-prometheus
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: prometheus
+      meta.helm.sh/release-namespace: prometheus
+    creationTimestamp: "2026-06-09T12:25:58Z"
+    labels:
+      app.kubernetes.io/component: metrics
+      app.kubernetes.io/instance: prometheus
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: kube-state-metrics
+      app.kubernetes.io/part-of: kube-state-metrics
+      app.kubernetes.io/version: 2.19.0
+      helm.sh/chart: kube-state-metrics-7.4.0
+      release: prometheus
+    name: prometheus-kube-state-metrics
+    namespace: prometheus
+    resourceVersion: "6369"
+    uid: a46ebbce-518e-4987-ace0-2f37325dab74
+  spec:
+    clusterIP: 10.43.250.112
+    clusterIPs:
+    - 10.43.250.112
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: http
+    selector:
+      app.kubernetes.io/instance: prometheus
+      app.kubernetes.io/name: kube-state-metrics
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    creationTimestamp: "2026-06-09T12:26:12Z"
+    labels:
+      app.kubernetes.io/managed-by: prometheus-operator
+      managed-by: prometheus-operator
+      operated-prometheus: "true"
+    name: prometheus-operated
+    namespace: prometheus
+    ownerReferences:
+    - apiVersion: monitoring.coreos.com/v1
+      kind: Prometheus
+      name: prometheus-kube-prometheus-prometheus
+      uid: 77ac5ef5-f344-414a-9dc4-96f3c4e41da3
+    resourceVersion: "6543"
+    uid: 9a367f96-4e44-4ea8-b480-30b45815809f
+  spec:
+    clusterIP: None
+    clusterIPs:
+    - None
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http-web
+      port: 9090
+      protocol: TCP
+      targetPort: http-web
+    selector:
+      app.kubernetes.io/name: prometheus
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      meta.helm.sh/release-name: prometheus
+      meta.helm.sh/release-namespace: prometheus
+      prometheus.io/scrape: "true"
+    creationTimestamp: "2026-06-09T12:25:58Z"
+    labels:
+      app.kubernetes.io/component: metrics
+      app.kubernetes.io/instance: prometheus
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: prometheus-node-exporter
+      app.kubernetes.io/part-of: prometheus-node-exporter
+      app.kubernetes.io/version: 1.11.1
+      helm.sh/chart: prometheus-node-exporter-4.55.0
+      jobLabel: node-exporter
+      release: prometheus
+    name: prometheus-prometheus-node-exporter
+    namespace: prometheus
+    resourceVersion: "6380"
+    uid: 93a12b26-04c0-4218-a66d-f47c44c59131
+  spec:
+    clusterIP: 10.43.216.81
+    clusterIPs:
+    - 10.43.216.81
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http-metrics
+      port: 9100
+      protocol: TCP
+      targetPort: 9100
+    selector:
+      app.kubernetes.io/instance: prometheus
+      app.kubernetes.io/name: prometheus-node-exporter
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"labels":{"app.kubernetes.io/managed-by":"kustomize","app.kubernetes.io/name":"messaging-topology-operator","control-plane":"controller-manager"},"name":"messaging-topology-controller-metrics-service","namespace":"rabbitmq-system"},"spec":{"ports":[{"name":"https","port":8443,"protocol":"TCP","targetPort":8443}],"selector":{"app.kubernetes.io/name":"messaging-topology-operator","control-plane":"controller-manager"}}}
+    creationTimestamp: "2026-06-12T15:46:35Z"
+    labels:
+      app.kubernetes.io/managed-by: kustomize
+      app.kubernetes.io/name: messaging-topology-operator
+      control-plane: controller-manager
+    name: messaging-topology-controller-metrics-service
+    namespace: rabbitmq-system
+    resourceVersion: "179347"
+    uid: 32f93f8c-ab54-4446-b22c-6c106a58d564
+  spec:
+    clusterIP: 10.43.184.37
+    clusterIPs:
+    - 10.43.184.37
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: https
+      port: 8443
+      protocol: TCP
+      targetPort: 8443
+    selector:
+      app.kubernetes.io/name: messaging-topology-operator
+      control-plane: controller-manager
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"labels":{"app.kubernetes.io/managed-by":"kustomize","app.kubernetes.io/name":"messaging-topology-operator"},"name":"messaging-topology-webhook-service","namespace":"rabbitmq-system"},"spec":{"ports":[{"port":443,"protocol":"TCP","targetPort":9443}],"selector":{"app.kubernetes.io/name":"messaging-topology-operator","control-plane":"controller-manager"}}}
+    creationTimestamp: "2026-06-12T15:46:35Z"
+    labels:
+      app.kubernetes.io/managed-by: kustomize
+      app.kubernetes.io/name: messaging-topology-operator
+    name: messaging-topology-webhook-service
+    namespace: rabbitmq-system
+    resourceVersion: "179351"
+    uid: c6f8ea23-1e74-4e7d-a848-a0aec362cd67
+  spec:
+    clusterIP: 10.43.33.11
+    clusterIPs:
+    - 10.43.33.11
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - port: 443
+      protocol: TCP
+      targetPort: 9443
+    selector:
+      app.kubernetes.io/name: messaging-topology-operator
+      control-plane: controller-manager
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"labels":{"app.kubernetes.io/component":"rabbitmq-operator","app.kubernetes.io/name":"rabbitmq-cluster-operator","app.kubernetes.io/part-of":"rabbitmq"},"name":"rabbitmq-cluster-operator-metrics-service","namespace":"rabbitmq-system"},"spec":{"ports":[{"name":"http","port":8080,"protocol":"TCP","targetPort":8080}],"selector":{"app.kubernetes.io/name":"rabbitmq-cluster-operator"}}}
+    creationTimestamp: "2026-06-12T15:08:56Z"
+    labels:
+      app.kubernetes.io/component: rabbitmq-operator
+      app.kubernetes.io/name: rabbitmq-cluster-operator
+      app.kubernetes.io/part-of: rabbitmq
+    name: rabbitmq-cluster-operator-metrics-service
+    namespace: rabbitmq-system
+    resourceVersion: "172127"
+    uid: 4b66f048-1609-4925-937f-87971fa23bff
+  spec:
+    clusterIP: 10.43.248.253
+    clusterIPs:
+    - 10.43.248.253
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      app.kubernetes.io/name: rabbitmq-cluster-operator
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      rabbitmq.com/erlang-version: 27.3.4.11
+      rabbitmq.com/queueRebalanceNeededAt: "2026-06-14T14:12:15Z"
+      rabbitmq.com/version: 4.2.6
+    creationTimestamp: "2026-06-12T15:16:34Z"
+    labels:
+      app.kubernetes.io/component: rabbitmq
+      app.kubernetes.io/name: rabbitmq
+      app.kubernetes.io/part-of: rabbitmq
+    name: rabbitmq
+    namespace: rabbitmq
+    ownerReferences:
+    - apiVersion: rabbitmq.com/v1beta1
+      blockOwnerDeletion: true
+      controller: true
+      kind: RabbitmqCluster
+      name: rabbitmq
+      uid: 1f98a9f0-08c7-4bc9-8c65-768385b3180f
+    resourceVersion: "243906"
+    uid: 5bc30ca0-dc21-4620-873a-bea61f7f0ab6
+  spec:
+    clusterIP: 10.43.66.248
+    clusterIPs:
+    - 10.43.66.248
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - appProtocol: amqp
+      name: amqp
+      port: 5672
+      protocol: TCP
+      targetPort: 5672
+    - appProtocol: http
+      name: management
+      port: 15672
+      protocol: TCP
+      targetPort: 15672
+    - appProtocol: amqps
+      name: amqps
+      port: 5671
+      protocol: TCP
+      targetPort: 5671
+    - appProtocol: https
+      name: management-tls
+      port: 15671
+      protocol: TCP
+      targetPort: 15671
+    - appProtocol: prometheus.io/metric-tls
+      name: prometheus-tls
+      port: 15691
+      protocol: TCP
+      targetPort: 15691
+    selector:
+      app.kubernetes.io/name: rabbitmq
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      rabbitmq.com/erlang-version: 27.3.4.11
+      rabbitmq.com/queueRebalanceNeededAt: "2026-06-14T14:12:15Z"
+      rabbitmq.com/version: 4.2.6
+    creationTimestamp: "2026-06-12T15:16:34Z"
+    labels:
+      app.kubernetes.io/component: rabbitmq
+      app.kubernetes.io/name: rabbitmq
+      app.kubernetes.io/part-of: rabbitmq
+    name: rabbitmq-nodes
+    namespace: rabbitmq
+    ownerReferences:
+    - apiVersion: rabbitmq.com/v1beta1
+      blockOwnerDeletion: true
+      controller: true
+      kind: RabbitmqCluster
+      name: rabbitmq
+      uid: 1f98a9f0-08c7-4bc9-8c65-768385b3180f
+    resourceVersion: "243905"
+    uid: 2a67e1e3-9eb0-4d4d-a7e5-e713250a0d42
+  spec:
+    clusterIP: None
+    clusterIPs:
+    - None
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: epmd
+      port: 4369
+      protocol: TCP
+      targetPort: 4369
+    - name: cluster-rpc
+      port: 25672
+      protocol: TCP
+      targetPort: 25672
+    publishNotReadyAddresses: true
+    selector:
+      app.kubernetes.io/name: rabbitmq
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      banzaicloud.com/last-applied: UEsDBBQACAAIAAAAAAAAAAAAAAAAAAAAAAAIAAAAb3JpZ2luYWyskkGP00AMhf+Lz5Pupq12SY7siVtVEBe0WrmOAyOmMyOPU0Cr+e/I6apqIwQXjmM/f3nx8ytg9p9Zik8Reji14OC7jwP08JHl5InBwZEVB1SE/hUwxqSoPsVizyzpyPqNp7Ly6S4nUeiha9fGue0VEswMPahMBhUefFmlXFSYAx7Kyse/d4tiJCPMTagOAh44zD4w50vjbfqlsE75RX/l80wOnmbjJkhhWawOIh75imLPkpGua+lHZNnzyMKRuED/ZbHBs/E/2b87tQdWXIMDSlElhcACvf3wZed7m9vfWF2YmrzpHmmL42Zom/tx6Jrt9mHdvNu01HR0fxi7cctEBPW5OiiZaQ4qiZ7tXgMbCp6jWlhzdA+bx24OThOlAD18etqBA0X5yrq7SKpbYPinzbNcQHYC/wCZpD47KByYNMl/i/FN+hSmoiwfdlYrijrNlxISDu8x2CnZJ2utvwMAAP//UEsHCD1+MMpjAQAABAMAAFBLAQIUABQACAAIAAAAAAA9fjDKYwEAAAQDAAAIAAAAAAAAAAAAAAAAAAAAAABvcmlnaW5hbFBLBQYAAAAAAQABADYAAACZAQAAAAA=
+      prometheus.io/port: "9121"
+      prometheus.io/scrape: "true"
+      redis.opstreelabs.in: "true"
+      redis.opstreelabs.instance: redis
+    creationTimestamp: "2026-06-11T16:27:43Z"
+    labels:
+      app: redis
+      redis_setup_type: replication
+      role: replication
+    name: redis
+    namespace: redis
+    ownerReferences:
+    - apiVersion: redis.redis.opstreelabs.in/v1beta2
+      controller: true
+      kind: RedisReplication
+      name: redis
+      uid: 7c4af3d1-0fd9-4462-831c-9c0bf9f4eccc
+    resourceVersion: "105216"
+    uid: f5d0ec39-f3a4-480a-8ef9-a930a56df6e1
+  spec:
+    clusterIP: 10.43.45.130
+    clusterIPs:
+    - 10.43.45.130
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: redis-client
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+    - name: redis-exporter
+      port: 9121
+      protocol: TCP
+      targetPort: 9121
+    selector:
+      app: redis
+      redis_setup_type: replication
+      role: replication
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      banzaicloud.com/last-applied: UEsDBBQACAAIAAAAAAAAAAAAAAAAAAAAAAAIAAAAb3JpZ2luYWysUkFu2zAQ/MucKSeyjaTSsTn1ZrhFL0UQrKlVS5TmEsuViyLQ3wvKgREbRU89ijM7O7OjV1AOX1lLkIQepxYOP0Ma0OMz6yl4hsORjQYyQv8KSkmMLEgq9TOrHNl+8FRWQe6yqKFH166rzjVWvFJm9DCdqqjyEMpKcjFljnQoq5D+jRaj5KvCAmJ2iHTguPignC/A2/RLYZvyi/3O55kcg1+MV4LE28fZIdHxIt/QMIQKUMQZKZnebXeQX4l1zyMrJ88F/bebY54z/C3J3ak9sNEaDl6SqcTIir5mv5x/X+f2V67f+4PDFCrv0W9p3Axtcz8OXbPdPqybD5vWN52/P4zduGXvPebn2aFk9ktnona2exXYx8DJam9Liw+bx27p0MRLRI8vTzs4GOl3tt2FMj87FI7sTfS/FfFGfYpTMdZPu/pWjGxauo5Cw0eK9WeoK+d5/hMAAP//UEsHCGLDpERaAQAAxgIAAFBLAQIUABQACAAIAAAAAABiw6REWgEAAMYCAAAIAAAAAAAAAAAAAAAAAAAAAABvcmlnaW5hbFBLBQYAAAAAAQABADYAAACQAQAAAAA=
+      prometheus.io/port: "9121"
+      prometheus.io/scrape: "true"
+      redis.opstreelabs.in: "true"
+      redis.opstreelabs.instance: redis
+    creationTimestamp: "2026-06-11T16:27:43Z"
+    labels:
+      app: redis
+      redis_setup_type: replication
+      role: replication
+    name: redis-additional
+    namespace: redis
+    ownerReferences:
+    - apiVersion: redis.redis.opstreelabs.in/v1beta2
+      controller: true
+      kind: RedisReplication
+      name: redis
+      uid: 7c4af3d1-0fd9-4462-831c-9c0bf9f4eccc
+    resourceVersion: "105220"
+    uid: 9b1afafd-c74d-43af-b93c-dc2774a553a9
+  spec:
+    clusterIP: 10.43.150.200
+    clusterIPs:
+    - 10.43.150.200
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: redis-client
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+    selector:
+      app: redis
+      redis_setup_type: replication
+      role: replication
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      banzaicloud.com/last-applied: UEsDBBQACAAIAAAAAAAAAAAAAAAAAAAAAAAIAAAAb3JpZ2luYWysUk2L2zAQ/S/vLGfXSditdeyeeikhLb2UZZmMx11RRRLSOKUs/u9FTjCbUHrq0Xozb96H30DJfZNcXAywOLUw+OlCD4svkk+OBQZHUepJCfYNFEJUUhdDqZ8px6Poq4xl5eJdillh0bXrynONFc6UBBaax0qapXdlFVPRLOLpUFYu/BstSoErwwxiMvB0ED/roJQW4LL9UkTH9KK/03knecez8DoQ/e3jZBDouNA3r0K9l1Lp6ntJ9O62QfwVJO9lkCyBpcB+v4ny7OBvPu5O7UGU1jDgGDRH7yXDVudL+Pu6t7/S/F4dDEZX5x55S8Omb5v7oe+a7fZh3XzYtNx0fH8YumErzIzpeTIoSbgmxX4sKvnTDhafY6hh19rODq4SYO8k6AWHfdg8dnOpGjl6WHx92sFAKf8Q3S0j07NBES+sMf+3Zi6jT4v2akhJx7l8H6n/SL7+HfXkNE1/AgAA//9QSwcIWJ/772IBAADXAgAAUEsBAhQAFAAIAAgAAAAAAFif++9iAQAA1wIAAAgAAAAAAAAAAAAAAAAAAAAAAG9yaWdpbmFsUEsFBgAAAAABAAEANgAAAJgBAAAAAA==
+      prometheus.io/port: "9121"
+      prometheus.io/scrape: "true"
+      redis.opstreelabs.in: "true"
+      redis.opstreelabs.instance: redis
+    creationTimestamp: "2026-06-11T16:27:43Z"
+    labels:
+      app: redis
+      redis_setup_type: replication
+      role: replication
+    name: redis-headless
+    namespace: redis
+    ownerReferences:
+    - apiVersion: redis.redis.opstreelabs.in/v1beta2
+      controller: true
+      kind: RedisReplication
+      name: redis
+      uid: 7c4af3d1-0fd9-4462-831c-9c0bf9f4eccc
+    resourceVersion: "105212"
+    uid: c1b97581-83e6-45c7-86d1-34afa09addee
+  spec:
+    clusterIP: None
+    clusterIPs:
+    - None
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: redis-client
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+    selector:
+      app: redis
+      redis_setup_type: replication
+      role: replication
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      banzaicloud.com/last-applied: UEsDBBQACAAIAAAAAAAAAAAAAAAAAAAAAAAIAAAAb3JpZ2luYWy0UsGO0zAQ/Zd3drqbttolObInblVBXNBqNXUmYOHa1nhShFb+d+RkiVqEuHHMvDcv7/nNKyi5zyzZxYAelxYG310Y0OMjy8VZhsGZlQZSQv8KCiEqqYsh188k8cz6jae8cfEuRVH06Npt1bnFshVKjB4qUxUVHlzexJRVmD2d8saFf6NZKdiqMIMoBp5O7GcflNIKvG03En1lnykry+/pS2ad0ov+TItS8s7OcSphWbgeFoNA5/WnzSpWpznRlR+D+COwHHlk4WA5o//yx/Muqf6W7e7SnlhpCwMbg0r0ngV9fY21kGPdO944vvYGg8lV3qPd07gb2uZ+HLpmv3/YNu92rW06e38au3HP1lqU52KQE9u5xSi62L0Ja73joLXJudeH3WM3t6rRRo8en54OMFCSr6yHlVKeDTJ7thrlP1fzRn3yU9X5cKizrKTTfBM+0vCefD2aaqSU8isAAP//UEsHCLooxT5gAQAA7gIAAFBLAQIUABQACAAIAAAAAAC6KMU+YAEAAO4CAAAIAAAAAAAAAAAAAAAAAAAAAABvcmlnaW5hbFBLBQYAAAAAAQABADYAAACWAQAAAAA=
+      prometheus.io/port: "9121"
+      prometheus.io/scrape: "true"
+      redis.opstreelabs.in: "true"
+      redis.opstreelabs.instance: redis
+    creationTimestamp: "2026-06-11T16:27:43Z"
+    labels:
+      app: redis
+      redis-role: master
+      redis_setup_type: replication
+      role: replication
+    name: redis-master
+    namespace: redis
+    ownerReferences:
+    - apiVersion: redis.redis.opstreelabs.in/v1beta2
+      controller: true
+      kind: RedisReplication
+      name: redis
+      uid: 7c4af3d1-0fd9-4462-831c-9c0bf9f4eccc
+    resourceVersion: "105224"
+    uid: 01c99866-9988-4b66-bd55-b132d688784d
+  spec:
+    clusterIP: 10.43.165.6
+    clusterIPs:
+    - 10.43.165.6
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: redis-client
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+    selector:
+      app: redis
+      redis-role: master
+      redis_setup_type: replication
+      role: replication
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      banzaicloud.com/last-applied: UEsDBBQACAAIAAAAAAAAAAAAAAAAAAAAAAAIAAAAb3JpZ2luYWyckkFvEzEQhf/LnL1pN42A+EhP3KKAuKCqmvW+Bate2xrPBlC0/x3ZhdKEG5eVPH7z9s18PhNn/xlSfIpk6dSToScfR7L0EXLyDmRohvLIymTPxDEmZfUplnrMkmboNyxl49NNTqJkad9vq8/lXXHCGWRJZQGthgIPCM2EcyZLgtEXMvW0eVoGSISitbo05xQRq/cMFe+qrukfC3TJj/qzWQty8K6lq4IUrourocgz/vyt++tWyyWzw6sk6XuEHDFBEB0K2S9X62rCzfM35aICBB7KxsebUz9AeUuGXIoqKQQI2Tr7y4KPte94Efl1ODK0+Kp763Y83Y19dzuN+263e7Pt3t31rtu722HaTzs452h9WA2VDNeoJNHnuBfT4ke9gFQ2jVQF1ThpcimQpU/3BzKkLF+hhxfJ+mCoIMBpkn95/SeH39L7sBSFfDjUWlHWpT2JkHh8z4Gjq2s7r+v6KwAA//9QSwcIuzj8omUBAACqAgAAUEsBAhQAFAAIAAgAAAAAALs4/KJlAQAAqgIAAAgAAAAAAAAAAAAAAAAAAAAAAG9yaWdpbmFsUEsFBgAAAAABAAEANgAAAJsBAAAAAA==
+      prometheus.io/port: "9121"
+      prometheus.io/scrape: "true"
+    creationTimestamp: "2026-06-11T16:27:44Z"
+    labels:
+      app: redis
+      app.kubernetes.io/component: metrics
+      redis_setup_type: replication
+      role: replication
+    name: redis-metrics
+    namespace: redis
+    ownerReferences:
+    - apiVersion: redis.redis.opstreelabs.in/v1beta2
+      controller: true
+      kind: RedisReplication
+      name: redis
+      uid: 7c4af3d1-0fd9-4462-831c-9c0bf9f4eccc
+    resourceVersion: "105244"
+    uid: 9a38b669-e171-48ff-895d-b9f0becfb56d
+  spec:
+    clusterIP: 10.43.213.39
+    clusterIPs:
+    - 10.43.213.39
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: redis-exporter
+      port: 9121
+      protocol: TCP
+      targetPort: 9121
+    selector:
+      app: redis
+      redis_setup_type: replication
+      role: replication
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      banzaicloud.com/last-applied: UEsDBBQACAAIAAAAAAAAAAAAAAAAAAAAAAAIAAAAb3JpZ2luYWy0UkFu2zAQ/MucKSeyjaTSsTn1ZrhFL0UQrKlVS5QmieVKRWHo7wUlQ7CLorcctTMczezsBZTcV5bsYkCLsYbBTxc6tPjMMjrLMDizUkdKaC+gEKKSuhhy+UwSz6w/eMgbFx9SFEWLpt4WnXssW6HEaKEyFFHhzuVNTFmF2dMpb1z4P5qVgi0KM4jJwNOJ/eyDUlqB6+tKoi/s7GlcJd8y65De9HdahJJ3dk5TCAv/djgZBDqv/6yuGJZxTnTjxyD+CixH7lk4WM5ov/213iXVv7I9jPWJlbYwsDGoRO9Z0JZtrIUcy7vjneVbczAYXOE92z31u66uHvuuqfb7p231YVfbqrGPp77p92ytxfQ6GeTEdm4xii5279Ja7zhoaXLu9Wn33MytarTRo8WXlwMMlOQ762GlTK8GmT1bjfK+1VypL37IyvLpUGZZSYf5JHyk7iP5cjPFxzRNfwIAAP//UEsHCBvoEOtgAQAA7QIAAFBLAQIUABQACAAIAAAAAAAb6BDrYAEAAO0CAAAIAAAAAAAAAAAAAAAAAAAAAABvcmlnaW5hbFBLBQYAAAAAAQABADYAAACWAQAAAAA=
+      prometheus.io/port: "9121"
+      prometheus.io/scrape: "true"
+      redis.opstreelabs.in: "true"
+      redis.opstreelabs.instance: redis
+    creationTimestamp: "2026-06-11T16:27:43Z"
+    labels:
+      app: redis
+      redis-role: slave
+      redis_setup_type: replication
+      role: replication
+    name: redis-replica
+    namespace: redis
+    ownerReferences:
+    - apiVersion: redis.redis.opstreelabs.in/v1beta2
+      controller: true
+      kind: RedisReplication
+      name: redis
+      uid: 7c4af3d1-0fd9-4462-831c-9c0bf9f4eccc
+    resourceVersion: "105228"
+    uid: 299c93be-bf25-4527-a85c-02cd44f750d5
+  spec:
+    clusterIP: 10.43.203.195
+    clusterIPs:
+    - 10.43.203.195
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: redis-client
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+    selector:
+      app: redis
+      redis-role: slave
+      redis_setup_type: replication
+      role: replication
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      banzaicloud.com/last-applied: UEsDBBQACAAIAAAAAAAAAAAAAAAAAAAAAAAIAAAAb3JpZ2luYWy0kkFv2zAMhf8Lz3JaO96K6LiedgvaYZehKGiZ3YQpkkDS2YZA/32QGyTxMmynHi0+f3zk4wEw+8/E4lMEC/sWDHz3cQQLj8R77wgM7EhxREWwB8AYk6L6FKV+Zk470m80ycqnm5xYwcKm7SpnWRPHmAksKE8VyjR6WaUsykQBB1n5+O+qKEZXCXOxEYrqIwUoBgIOFGZDmPOV4iw9gp+FdMrP+ms2dFlNYfFSDETcXfe8JFaBZDw7AwPpRyR+oBdiio4E7Jc/Fv0639+mvNm3Ayl2YMClqJxCIAZb93KK5qH+97i0cL0XA5Ov6vV4+9K2/aahob9r+mGNzfAO+2ZcE3Z9S/1t56A8FQOSyc2pJtZX00fyaW4XPEWt4c5Rd+/Xd5s5aU0uBbDw6X4LBhT5K+n2rCnmsHRJPyuB+ISqR/MfUpWUJwNCgZwmfpO8j6L7MIkSf9zWN1HUaT6vkHD8gKEeYm1fSvkdAAD//1BLBwjfw60ibQEAAEIDAABQSwECFAAUAAgACAAAAAAA38OtIm0BAABCAwAACAAAAAAAAAAAAAAAAAAAAAAAb3JpZ2luYWxQSwUGAAAAAAEAAQA2AAAAowEAAAAA
+      prometheus.io/port: "9121"
+      prometheus.io/scrape: "true"
+      redis.opstreelabs.in: "true"
+      redis.opstreelabs.instance: redis-sentinel
+    creationTimestamp: "2026-06-11T18:54:48Z"
+    labels:
+      app: redis-sentinel-sentinel
+      redis_setup_type: sentinel
+      role: sentinel
+    name: redis-sentinel-sentinel
+    namespace: redis
+    ownerReferences:
+    - apiVersion: redis.redis.opstreelabs.in/v1beta2
+      controller: true
+      kind: RedisSentinel
+      name: redis-sentinel
+      uid: 3d0f1149-eb47-4b3a-b5a4-d3ea241e402c
+    resourceVersion: "126677"
+    uid: 814abcc6-7eb8-451e-b46b-7497d7b9e1c8
+  spec:
+    clusterIP: 10.43.221.118
+    clusterIPs:
+    - 10.43.221.118
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: sentinel-client
+      port: 26379
+      protocol: TCP
+      targetPort: 26379
+    - name: redis-exporter
+      port: 9121
+      protocol: TCP
+      targetPort: 9121
+    selector:
+      app: redis-sentinel-sentinel
+      redis_setup_type: sentinel
+      role: sentinel
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      banzaicloud.com/last-applied: UEsDBBQACAAIAAAAAAAAAAAAAAAAAAAAAAAIAAAAb3JpZ2luYWy0Uk1v1DAU/C9zdrbNB1SbIz1xW7WIC6qqF+cVLLy25feyCFX+78jpqqG04tZb4hmPZ968R1ByXzmLiwEjTi0MfrowY8Qt55OzDIMjK82khPERFEJUUheD1N+U45H1By+yc/EixawYsW+7qvMSE5spMUZoXqpo5tnJLibRzOxpkp0L/0dFKdiqsIKNcFAX2KMYeJrYr4YopVeMjXoWvhfWJd3r79XQ32j0L06KQaDj6ze3D5pnV6dB9XrlSqLNJAzir8D5hh84c7AsGL/9M/OnqG8Fvji1Eyt1MLAxaI7ec8ZYR/Tc0k29d7sleNMuDBZX2f18+dC2w77habhqhqmnZvpAQzP3TN3Q8nDZWZS7YiCJ7VpwzPpk+qz8nNx6x0Frz2vr3cf+ar+WrtFGjxFfrg8wUMrfWQ8bp9wZCHu2GvO7NHYmXftFlPPnQz0TJV3WBfGR5k/k6yrV50spfwIAAP//UEsHCDI093VjAQAABAMAAFBLAQIUABQACAAIAAAAAAAyNPd1YwEAAAQDAAAIAAAAAAAAAAAAAAAAAAAAAABvcmlnaW5hbFBLBQYAAAAAAQABADYAAACZAQAAAAA=
+      prometheus.io/port: "9121"
+      prometheus.io/scrape: "true"
+      redis.opstreelabs.in: "true"
+      redis.opstreelabs.instance: redis-sentinel
+    creationTimestamp: "2026-06-11T18:54:49Z"
+    labels:
+      app: redis-sentinel-sentinel
+      redis_setup_type: sentinel
+      role: sentinel
+    name: redis-sentinel-sentinel-additional
+    namespace: redis
+    ownerReferences:
+    - apiVersion: redis.redis.opstreelabs.in/v1beta2
+      controller: true
+      kind: RedisSentinel
+      name: redis-sentinel
+      uid: 3d0f1149-eb47-4b3a-b5a4-d3ea241e402c
+    resourceVersion: "126681"
+    uid: a91309b6-9929-4fe2-ac71-f6b106977ec3
+  spec:
+    clusterIP: 10.43.213.65
+    clusterIPs:
+    - 10.43.213.65
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: sentinel-client
+      port: 26379
+      protocol: TCP
+      targetPort: 26379
+    selector:
+      app: redis-sentinel-sentinel
+      redis_setup_type: sentinel
+      role: sentinel
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      banzaicloud.com/last-applied: UEsDBBQACAAIAAAAAAAAAAAAAAAAAAAAAAAIAAAAb3JpZ2luYWy0Us1u2zwQfJc5U04k6/sC89iceimMpOilCIIVtWmI0iTBXbkoAr17QdmwmiborTdJO5qdn30BZf+Fi/gUYXFsYfDdxxEW91yO3jEMDqw0khLsCyjGpKQ+RamvuaQD6zNPsvHpKqeisNi1XeV5PRNXKDMstEyVtPDoZZOyaGEONMjGx79PRSm6yrAMG+GoPnLAbBBo4LAIopzfIFbomfhRWKf8qD8XQb9PU3j1ZTaIdHi7c314ZhoDi+CElEyrRBikH5HLHT9x4ehYYL/+kfjJ6Ht2r47twEodDFyKWlIIXGBrQJeO7up/96v+d8XCYPIVvR2vn9q23zU89DdNP2ypGf6jvhm3TF3fcn/dOcwPs4FkdjVNFyZRLh/3sPiUYm2mdnzycV52icIFz1HPENju/+3NbrkCTS4FWHy+3cNAqXxj3a+Y+cFAOLDTVP5JhWfQ7cVMdaik03IxIdH4gUK9rbp+nudfAQAA//9QSwcInFwRJmsBAAAVAwAAUEsBAhQAFAAIAAgAAAAAAJxcESZrAQAAFQMAAAgAAAAAAAAAAAAAAAAAAAAAAG9yaWdpbmFsUEsFBgAAAAABAAEANgAAAKEBAAAAAA==
+      prometheus.io/port: "9121"
+      prometheus.io/scrape: "true"
+      redis.opstreelabs.in: "true"
+      redis.opstreelabs.instance: redis-sentinel
+    creationTimestamp: "2026-06-11T18:54:48Z"
+    labels:
+      app: redis-sentinel-sentinel
+      redis_setup_type: sentinel
+      role: sentinel
+    name: redis-sentinel-sentinel-headless
+    namespace: redis
+    ownerReferences:
+    - apiVersion: redis.redis.opstreelabs.in/v1beta2
+      controller: true
+      kind: RedisSentinel
+      name: redis-sentinel
+      uid: 3d0f1149-eb47-4b3a-b5a4-d3ea241e402c
+    resourceVersion: "126671"
+    uid: 498379db-9808-4a30-8349-a6a9aad6b105
+  spec:
+    clusterIP: None
+    clusterIPs:
+    - None
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: sentinel-client
+      port: 26379
+      protocol: TCP
+      targetPort: 26379
+    selector:
+      app: redis-sentinel-sentinel
+      redis_setup_type: sentinel
+      role: sentinel
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      banzaicloud.com/last-applied: UEsDBBQACAAIAAAAAAAAAAAAAAAAAAAAAAAIAAAAb3JpZ2luYWyUkkFv1DAQhf/LnJ1tsxuEmiM9cVu1iAuqqonzClYdjzWeLKBV/jtyFu2yCCS4RPHM85vR+3wkzuEjtARJ1NOhJUevIY3U0yP0EDzI0QTjkY2pPxKnJMYWJJV6zCoT7Avmsglyk0WNerprt9Xnule8cgb1ZDqDFkeRB8TVhHOmnhRjKE1BspAQzz/kan/zOg/QBMNq5mXKkpDqtAmmwRdyJ4fnApvzs31fh/3iohKvKoujxBP+Prm5OFdhyezPanIkXxP0AS9QJI9C/affwlyFm9NXcjEFIg9lE9LNoR1gvCVHXpKpxAilviZzjv+h3nu8rP/HXcnRHKp6N96+tG1312Do3jbdsONmeMNdM+7A265Fd7v1tDwtjkqGX8mJ2mnpK2d8qw1o5bfSrDBXliZeIvX04X5Pjoz1M2x/lixPjgoivIn+C9P/ZvVTdB/nYtD3+1orxjavTygKj+84cvI1yOOyLD8CAAD//1BLBwgZZBlOagEAANoCAABQSwECFAAUAAgACAAAAAAAGWQZTmoBAADaAgAACAAAAAAAAAAAAAAAAAAAAAAAb3JpZ2luYWxQSwUGAAAAAAEAAQA2AAAAoAEAAAAA
+      prometheus.io/port: "9121"
+      prometheus.io/scrape: "true"
+    creationTimestamp: "2026-06-11T18:54:49Z"
+    labels:
+      app: redis-sentinel-sentinel
+      app.kubernetes.io/component: metrics
+      redis_setup_type: sentinel
+      role: sentinel
+    name: redis-sentinel-sentinel-metrics
+    namespace: redis
+    ownerReferences:
+    - apiVersion: redis.redis.opstreelabs.in/v1beta2
+      controller: true
+      kind: RedisSentinel
+      name: redis-sentinel
+      uid: 3d0f1149-eb47-4b3a-b5a4-d3ea241e402c
+    resourceVersion: "126686"
+    uid: a5d94eb7-2826-4da8-a8d7-a40817b3f5b8
+  spec:
+    clusterIP: 10.43.18.243
+    clusterIPs:
+    - 10.43.18.243
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: redis-exporter
+      port: 9121
+      protocol: TCP
+      targetPort: 9121
+    selector:
+      app: redis-sentinel-sentinel
+      redis_setup_type: sentinel
+      role: sentinel
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+kind: List
+metadata:
+  resourceVersion: ""

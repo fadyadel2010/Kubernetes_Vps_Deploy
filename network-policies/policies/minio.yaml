@@ -1,0 +1,39 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+
+metadata:
+  name: minio
+  namespace: minio
+
+spec:
+  podSelector:
+    matchLabels:
+      app: minio
+
+  policyTypes:
+    - Ingress
+
+  ingress:
+    - from:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 9000
+
+        - protocol: TCP
+          port: 9001
+
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+
+metadata:
+  name: default-deny
+  namespace: minio
+
+spec:
+  podSelector: {}
+
+  policyTypes:
+    - Ingress

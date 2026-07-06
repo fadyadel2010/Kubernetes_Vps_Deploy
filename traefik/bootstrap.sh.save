@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+
+KUBECTL="sudo -E kubectl --kubeconfig=${KUBECONFIG}"
+
+for BIN in kubectl
+do
+  if ! command -v "$BIN" >/dev/null 2>&1
+  then
+    echo "[ERROR] Missing dependency: $BIN"
+    exit 1
+  fi
+done
+
+echo "========================================="
+echo "Deploying Traefik HelmChartConfig"
+echo "========================================="
+
+sudo cp "$SCRIPT_DIR/base/helmchartconfig.yaml" \
+/var/lib/rancher/k3s/server/manifests/traefik-config.yaml
+
+echo
+echo "Waiting for Traefik rollout..."
+
+sudo kubectl rollout status deployment/traefik \
+-n kube-system \
+--timeout=180s
+
+echo
+echo "Traefik deployment completed successfully."

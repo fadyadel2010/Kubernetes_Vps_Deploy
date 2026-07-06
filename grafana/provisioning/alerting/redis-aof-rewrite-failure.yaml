@@ -18,7 +18,7 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: ffom74f70o2rkb
+            datasourceUid: prometheus
             model:
               editorMode: code
               expr: min(redis_aof_last_bgrewrite_status)

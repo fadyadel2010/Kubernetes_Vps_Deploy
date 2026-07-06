@@ -1,0 +1,15 @@
+class:
+  name: critical-small
+
+description: >
+  Small profile for lightweight critical services.
+
+resources:
+
+  requests:
+    cpu: 250m
+    memory: 512Mi
+
+  limits:
+    cpu: 1000m
+    memory: 2Gi

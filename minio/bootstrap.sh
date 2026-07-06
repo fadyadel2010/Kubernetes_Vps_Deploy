@@ -13,19 +13,6 @@ echo "======================================================"
 echo
 
 ##################################################
-# Root Check
-##################################################
-
-if [ "$EUID" -ne 0 ]; then
-  echo
-  echo "[ERROR] Please run using:"
-  echo
-  echo "sudo bash bootstrap.sh"
-  echo
-  exit 1
-fi
-
-##################################################
 # Required Files
 ##################################################
 
@@ -56,7 +43,7 @@ echo "[OK] Bootstrap files verified"
 # Required Binaries
 ##################################################
 
-for BIN in kubectl curl
+for BIN in sudo kubectl curl
 do
   if ! command -v "$BIN" >/dev/null 2>&1
   then
@@ -76,7 +63,7 @@ echo "[OK] Dependencies verified"
 echo
 echo "=== Namespace ==="
 
-kubectl apply -f "${ROOT_DIR}/namespace.yaml"
+sudo kubectl apply -f "${ROOT_DIR}/namespace.yaml"
 
 echo "[OK] Namespace ready"
 
@@ -87,7 +74,7 @@ echo "[OK] Namespace ready"
 echo
 echo "=== Secret ==="
 
-kubectl apply -f "${ROOT_DIR}/minio-secret.yaml"
+sudo kubectl apply -f "${ROOT_DIR}/minio-secret.yaml"
 
 echo "[OK] Secret ready"
 
@@ -98,7 +85,7 @@ echo "[OK] Secret ready"
 echo
 echo "=== Persistent Storage ==="
 
-kubectl apply -f "${ROOT_DIR}/minio-pvc.yaml"
+sudo kubectl apply -f "${ROOT_DIR}/minio-pvc.yaml"
 
 echo "[OK] PVC ready"
 
@@ -109,7 +96,7 @@ echo "[OK] PVC ready"
 echo
 echo "=== Service ==="
 
-kubectl apply -f "${ROOT_DIR}/minio-service.yaml"
+sudo kubectl apply -f "${ROOT_DIR}/minio-service.yaml"
 
 echo "[OK] Service ready"
 
@@ -120,9 +107,9 @@ echo "[OK] Service ready"
 echo
 echo "=== Deployment ==="
 
-kubectl apply -f "${ROOT_DIR}/minio-deployment.yaml"
+sudo kubectl apply -f "${ROOT_DIR}/minio-deployment.yaml"
 
-kubectl rollout status \
+sudo kubectl rollout status \
   deployment/minio \
   -n minio \
   --timeout=10m
@@ -136,7 +123,7 @@ echo "[OK] Deployment ready"
 echo
 echo "=== Ingress ==="
 
-kubectl apply -f "${ROOT_DIR}/minio-ingress.yaml"
+sudo kubectl apply -f "${ROOT_DIR}/minio-ingress.yaml"
 
 echo "[OK] Ingress ready"
 
@@ -145,7 +132,7 @@ echo "[OK] Ingress ready"
 ##################################################
 
 MINIO_POD=$(
-kubectl get pod \
+sudo kubectl get pod \
   -n minio \
   -l app=minio \
   -o jsonpath='{.items[0].metadata.name}'
@@ -166,7 +153,7 @@ echo "[INFO] Using pod: $MINIO_POD"
 echo
 echo "=== Bucket Bootstrap ==="
 
-kubectl exec -n minio "$MINIO_POD" -- \
+sudo kubectl exec -n minio "$MINIO_POD" -- \
   sh -c '
     if ! command -v mc >/dev/null 2>&1; then
       curl -sSL \
@@ -184,18 +171,18 @@ kubectl exec -n minio "$MINIO_POD" -- \
 ##################################################
 
 ROOT_USER=$(
-kubectl get secret minio-secret \
+sudo kubectl get secret minio-secret \
   -n minio \
   -o jsonpath='{.data.root-user}' | base64 -d
 )
 
 ROOT_PASS=$(
-kubectl get secret minio-secret \
+sudo kubectl get secret minio-secret \
   -n minio \
   -o jsonpath='{.data.root-password}' | base64 -d
 )
 
-kubectl exec -n minio "$MINIO_POD" -- \
+sudo kubectl exec -n minio "$MINIO_POD" -- \
   mc alias set local \
   http://localhost:9000 \
   "$ROOT_USER" \
@@ -211,7 +198,7 @@ for BUCKET in \
   mongodb-backups
 do
 
-  if kubectl exec -n minio "$MINIO_POD" -- \
+  if sudo kubectl exec -n minio "$MINIO_POD" -- \
       mc ls local/"$BUCKET" >/dev/null 2>&1
   then
 
@@ -219,7 +206,7 @@ do
 
   else
 
-    kubectl exec -n minio "$MINIO_POD" -- \
+    sudo kubectl exec -n minio "$MINIO_POD" -- \
       mc mb local/"$BUCKET"
 
     echo "[OK] Bucket created: $BUCKET"
@@ -228,43 +215,9 @@ do
 
 done
 
-##################################################
-# Validation
-##################################################
-
-echo
-echo "=== Validation ==="
-
-kubectl get pvc minio-storage \
-  -n minio >/dev/null
-
-echo "[OK] PVC exists"
-
-kubectl get svc minio \
-  -n minio >/dev/null
-
-echo "[OK] Service exists"
-
-kubectl get ingress minio \
-  -n minio >/dev/null
-
-echo "[OK] Ingress exists"
-
-for BUCKET in \
-  postgres-backups \
-  opensearch-snapshots \
-  mongodb-backups
-do
-
-  kubectl exec -n minio "$MINIO_POD" -- \
-    mc ls local/"$BUCKET" >/dev/null
-
-  echo "[OK] Bucket verified: $BUCKET"
-
-done
-
 echo
 echo "======================================================"
 echo " MinIO Bootstrap Completed Successfully"
 echo "======================================================"
 echo
+

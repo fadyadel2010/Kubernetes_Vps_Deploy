@@ -1,0 +1,15 @@
+class:
+  name: critical-medium
+
+description: >
+  Medium resource profile for critical infrastructure services.
+
+resources:
+
+  requests:
+    cpu: 500m
+    memory: 2Gi
+
+  limits:
+    cpu: 1000m
+    memory: 4Gi

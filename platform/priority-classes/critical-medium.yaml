@@ -1,0 +1,9 @@
+priority:
+  name: critical-medium
+
+value: 90000
+
+globalDefault: false
+
+description: >
+  High priority for important backend services.

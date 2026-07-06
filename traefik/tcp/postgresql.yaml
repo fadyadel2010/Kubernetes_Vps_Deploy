@@ -1,0 +1,16 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+
+metadata:
+  name: postgres
+  namespace: postgresql
+
+spec:
+  entryPoints:
+    - postgres
+
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: shopixy-pgbouncer
+          port: 5432

@@ -1,0 +1,66 @@
+NAMESPACE              NAME                                                              READY   STATUS             RESTARTS         AGE     IP             NODE            NOMINATED NODE   READINESS GATES
+cert-manager           cert-manager-5957746d66-rz5xk                                     1/1     Running            13 (3h53m ago)   13d     10.42.0.165    shopixyserver   <none>           <none>
+cert-manager           cert-manager-cainjector-567c6b47ff-gffzv                          1/1     Running            13 (3h20m ago)   13d     10.42.0.187    shopixyserver   <none>           <none>
+cert-manager           cert-manager-webhook-7cc5c588cb-sx5lq                             1/1     Running            13 (3h20m ago)   13d     10.42.0.150    shopixyserver   <none>           <none>
+cnpg-system            cnpg-cloudnative-pg-5bff55f7cb-f5tst                              1/1     Running            12 (3h19m ago)   4d1h    10.42.0.153    shopixyserver   <none>           <none>
+default                mongo-test-rs0-0                                                  0/1     CrashLoopBackOff   794 (26s ago)    15d     10.42.0.186    shopixyserver   <none>           <none>
+default                percona-server-mongodb-operator-759cb88667-7n2tg                  1/1     Running            34 (3h19m ago)   15d     10.42.0.148    shopixyserver   <none>           <none>
+kube-system            coredns-8db54c48d-7n62c                                           1/1     Running            20 (3h20m ago)   17d     10.42.0.175    shopixyserver   <none>           <none>
+kube-system            helm-install-traefik-crd-mfxgh                                    0/1     Completed          0                17d     <none>         shopixyserver   <none>           <none>
+kube-system            helm-install-traefik-wjrhg                                        0/1     Completed          0                23m     10.42.0.203    shopixyserver   <none>           <none>
+kube-system            local-path-provisioner-5d9d9885bc-6xbsz                           1/1     Running            20 (3h20m ago)   17d     10.42.0.154    shopixyserver   <none>           <none>
+kube-system            metrics-server-786d997795-xpnn2                                   1/1     Running            20 (3h20m ago)   17d     10.42.0.159    shopixyserver   <none>           <none>
+kube-system            svclb-kubernetes-dashboard-kong-proxy-9e7e0d7f-dxv85              1/1     Running            0                15d     10.42.0.202    shopixyserver   <none>           <none>
+kube-system            traefik-9bcdbbd9-m9t87                                            1/1     Running            0                23m     10.42.0.204    shopixyserver   <none>           <none>
+kubernetes-dashboard   kubernetes-dashboard-api-64f4674bd4-pl22z                         1/1     Running            18 (3h53m ago)   16d     10.42.0.174    shopixyserver   <none>           <none>
+kubernetes-dashboard   kubernetes-dashboard-auth-864bbb44c8-gdp26                        1/1     Running            18 (3h53m ago)   16d     10.42.0.184    shopixyserver   <none>           <none>
+kubernetes-dashboard   kubernetes-dashboard-kong-78b7499b45-r42p2                        1/1     Running            31 (3h19m ago)   16d     10.42.0.155    shopixyserver   <none>           <none>
+kubernetes-dashboard   kubernetes-dashboard-metrics-scraper-594bbfb84b-qvmzp             1/1     Running            18 (3h53m ago)   16d     10.42.0.177    shopixyserver   <none>           <none>
+kubernetes-dashboard   kubernetes-dashboard-web-7f7574785f-kkbc7                         1/1     Running            18 (3h53m ago)   16d     10.42.0.169    shopixyserver   <none>           <none>
+lab                    nginx-56c45fd5ff-4z8t2                                            1/1     Running            20 (3h20m ago)   16d     10.42.0.189    shopixyserver   <none>           <none>
+lab                    nginx-56c45fd5ff-qg9gd                                            1/1     Running            20 (3h20m ago)   16d     10.42.0.161    shopixyserver   <none>           <none>
+lab                    nginx-56c45fd5ff-qq4p8                                            1/1     Running            20 (3h20m ago)   16d     10.42.0.164    shopixyserver   <none>           <none>
+minio                  minio-666886b8b9-5b99m                                            1/1     Running            19 (3h20m ago)   16d     10.42.0.179    shopixyserver   <none>           <none>
+mongo-bootstrap-test   mongo-0                                                           1/1     Running            16 (3h20m ago)   14d     10.42.0.194    shopixyserver   <none>           <none>
+mongo-bootstrap-test   mongo-1                                                           1/1     Running            16 (3h20m ago)   14d     10.42.0.178    shopixyserver   <none>           <none>
+mongo-bootstrap-test   mongo-2                                                           1/1     Running            16 (3h20m ago)   14d     10.42.0.180    shopixyserver   <none>           <none>
+mongo                  mongo-0                                                           1/1     Running            16 (3h20m ago)   14d     10.42.0.190    shopixyserver   <none>           <none>
+mongo                  mongo-1                                                           1/1     Running            16 (3h20m ago)   14d     10.42.0.163    shopixyserver   <none>           <none>
+mongo                  mongo-2                                                           1/1     Running            16 (3h20m ago)   14d     10.42.0.197    shopixyserver   <none>           <none>
+mongo                  mongodb-exporter-5d6574d889-jnqwh                                 1/1     Running            15 (3h53m ago)   14d     10.42.0.171    shopixyserver   <none>           <none>
+monitoring             grafana-76fdf87854-6mk7v                                          1/1     Running            3 (3h20m ago)    2d5h    10.42.0.168    shopixyserver   <none>           <none>
+opensearch-system      opensearch-operator-55ccb94cbf-gzwl2                              0/1     CrashLoopBackOff   242 (71s ago)    11d     10.42.0.167    shopixyserver   <none>           <none>
+opensearch             opensearch-exporter-prometheus-elasticsearch-exporter-76d588dh5   1/1     Running            17 (3h19m ago)   10d     10.42.0.147    shopixyserver   <none>           <none>
+opensearch             opensearch-snapshot-29703780-v7q5t                                0/1     Completed          0                2d4h    <none>         shopixyserver   <none>           <none>
+opensearch             opensearch-snapshot-29706300-cpkkg                                0/1     Error              0                7h28m   <none>         shopixyserver   <none>           <none>
+opensearch             opensearch-snapshot-29706300-gzrhh                                0/1     Completed          0                7h26m   <none>         shopixyserver   <none>           <none>
+opensearch             opensearch-snapshot-29706300-k6qh4                                0/1     Error              0                7h27m   <none>         shopixyserver   <none>           <none>
+opensearch             opensearch-snapshot-29706300-pj859                                0/1     Error              0                7h28m   <none>         shopixyserver   <none>           <none>
+opensearch             opensearch-snapshot-29706300-zsxht                                0/1     Error              0                7h29m   <none>         shopixyserver   <none>           <none>
+opensearch             opensearch-snapshot-29706660-z7zc7                                0/1     Completed          0                4h24m   <none>         shopixyserver   <none>           <none>
+opensearch             shopixy-search-core-0                                             1/1     Running            9 (3h20m ago)    10d     10.42.0.173    shopixyserver   <none>           <none>
+opensearch             shopixy-search-core-1                                             1/1     Running            9 (3h20m ago)    10d     10.42.0.195    shopixyserver   <none>           <none>
+opensearch             shopixy-search-core-2                                             1/1     Running            9 (3h20m ago)    10d     10.42.0.176    shopixyserver   <none>           <none>
+opensearch             shopixy-search-dashboards-78c67786cd-26lxz                        1/1     Running            10 (3h20m ago)   11d     10.42.0.182    shopixyserver   <none>           <none>
+opensearch             shopixy-search-securityconfig-update-mwjk6                        0/1     Completed          0                11d     <none>         shopixyserver   <none>           <none>
+postgresql             shopixy-pgbouncer-6fb4cfd8bc-6xps8                                1/1     Running            1 (3h20m ago)    5h56m   10.42.0.193    shopixyserver   <none>           <none>
+postgresql             shopixy-pgbouncer-6fb4cfd8bc-ss2h2                                1/1     Running            1 (3h20m ago)    5h56m   10.42.0.162    shopixyserver   <none>           <none>
+postgresql             shopixy-postgres-1                                                1/1     Running            1 (3h20m ago)    5h57m   10.42.0.172    shopixyserver   <none>           <none>
+postgresql             shopixy-postgres-2                                                1/1     Running            1 (3h20m ago)    5h57m   10.42.0.196    shopixyserver   <none>           <none>
+postgresql             shopixy-postgres-3                                                1/1     Running            1 (3h20m ago)    5h56m   10.42.0.170    shopixyserver   <none>           <none>
+prometheus             prometheus-kube-prometheus-operator-68cccb8d4d-l8xpn              1/1     Running            48 (3h18m ago)   16d     10.42.0.156    shopixyserver   <none>           <none>
+prometheus             prometheus-kube-state-metrics-678b9d8db-bvxsk                     1/1     Running            40 (3h19m ago)   16d     10.42.0.149    shopixyserver   <none>           <none>
+prometheus             prometheus-prometheus-kube-prometheus-prometheus-0                2/2     Running            38 (3h20m ago)   16d     10.42.0.198    shopixyserver   <none>           <none>
+prometheus             prometheus-prometheus-node-exporter-x2mwx                         1/1     Running            51 (3h19m ago)   16d     192.168.1.50   shopixyserver   <none>           <none>
+rabbitmq-system        messaging-topology-operator-dbfb444c-g64jt                        1/1     Running            13 (3h20m ago)   13d     10.42.0.160    shopixyserver   <none>           <none>
+rabbitmq-system        rabbitmq-cluster-operator-757bb9458b-fhvnj                        1/1     Running            13 (3h20m ago)   13d     10.42.0.192    shopixyserver   <none>           <none>
+rabbitmq               rabbitmq-server-0                                                 1/1     Running            11 (3h20m ago)   11d     10.42.0.181    shopixyserver   <none>           <none>
+rabbitmq               rabbitmq-server-1                                                 1/1     Running            5 (3h20m ago)    3d4h    10.42.0.188    shopixyserver   <none>           <none>
+rabbitmq               rabbitmq-server-2                                                 1/1     Running            11 (3h20m ago)   11d     10.42.0.158    shopixyserver   <none>           <none>
+redis-system           redis-operator-695bd9d849-hvkcg                                   1/1     Running            18 (3h19m ago)   14d     10.42.0.157    shopixyserver   <none>           <none>
+redis                  redis-0                                                           2/2     Running            8 (3h20m ago)    3d1h    10.42.0.166    shopixyserver   <none>           <none>
+redis                  redis-1                                                           2/2     Running            8 (3h20m ago)    3d1h    10.42.0.183    shopixyserver   <none>           <none>
+redis                  redis-2                                                           2/2     Running            8 (3h20m ago)    3d1h    10.42.0.151    shopixyserver   <none>           <none>
+redis                  redis-sentinel-sentinel-0                                         2/2     Running            8 (3h53m ago)    3d1h    10.42.0.145    shopixyserver   <none>           <none>
+redis                  redis-sentinel-sentinel-1                                         2/2     Running            8 (3h20m ago)    3d1h    10.42.0.185    shopixyserver   <none>           <none>
+redis                  redis-sentinel-sentinel-2                                         2/2     Running            8 (3h20m ago)    3d1h    10.42.0.191    shopixyserver   <none>           <none>

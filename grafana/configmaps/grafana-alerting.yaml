@@ -686,8 +686,6 @@ data:
                 severity: critical
                 stack: postgres
               isPaused: false
-              notification_settings:
-                receiver: empty
   pg-long-transaction-critical.yaml: |
     apiVersion: 1
 
@@ -1074,8 +1072,6 @@ data:
 
             isPaused: false
 
-            notification_settings:
-              receiver: empty
   pg-replication-lag-warning.yaml: |
     apiVersion: 1
 
@@ -1150,8 +1146,6 @@ data:
 
             isPaused: false
 
-            notification_settings:
-              receiver: empty
   pg-wal-usage-critical.yaml: |
     apiVersion: 1
 
@@ -2423,5 +2417,5 @@ data:
             isPaused: false
 kind: ConfigMap
 metadata:
-  name: grafana-alerting-postgres
+  name: grafana-alerting
   namespace: monitoring

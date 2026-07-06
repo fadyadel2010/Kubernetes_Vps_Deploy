@@ -1,0 +1,9 @@
+priority:
+  name: critical-large
+
+value: 100000
+
+globalDefault: false
+
+description: >
+  Highest priority for mission critical data services.

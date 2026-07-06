@@ -1,0 +1,59 @@
+apiVersion: rabbitmq.com/v1beta1
+kind: Binding
+metadata:
+  name: orders-binding
+  namespace: rabbitmq-lab
+
+spec:
+  vhost: test
+
+  source: shopixy.events
+
+  destination: orders
+
+  destinationType: queue
+
+  routingKey: orders.*
+
+  rabbitmqClusterReference:
+    name: rabbitmq
+---
+apiVersion: rabbitmq.com/v1beta1
+kind: Binding
+metadata:
+  name: products-binding
+  namespace: rabbitmq-lab
+
+spec:
+  vhost: test
+
+  source: shopixy.events
+
+  destination: products
+
+  destinationType: queue
+
+  routingKey: products.*
+
+  rabbitmqClusterReference:
+    name: rabbitmq
+---
+apiVersion: rabbitmq.com/v1beta1
+kind: Binding
+metadata:
+  name: notifications-binding
+  namespace: rabbitmq-lab
+
+spec:
+  vhost: test
+
+  source: shopixy.events
+
+  destination: notifications
+
+  destinationType: queue
+
+  routingKey: notifications.*
+
+  rabbitmqClusterReference:
+    name: rabbitmq

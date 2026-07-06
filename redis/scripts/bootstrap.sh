@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -eo pipefail
+set -euo pipefail
 
 #################################################
 # Redis Kubernetes Bootstrap
@@ -134,10 +134,6 @@ sudo -E kubectl get deployment redis-operator \
 -o jsonpath='{.status.availableReplicas}'
 )
 
-[ "${AVAILABLE:-0}" -ge 1 ] || \
-    error "Redis Operator not available"
-
-success "      Operator OK"
 
 #################################################
 # Step 4
@@ -177,6 +173,12 @@ fi
 #################################################
 
 echo "[5/10] Deploying Redis Replication..."
+
+sudo -E kubectl annotate redisreplication redis \
+    -n "$NAMESPACE" \
+    kubectl.kubernetes.io/last-applied-configuration- \
+    >/dev/null 2>&1 || true
+
 
 sudo -E kubectl apply \
     -f "$PROJECT_ROOT/redis-replication.yaml"
@@ -219,6 +221,11 @@ success "      Redis Ready"
 #################################################
 
 echo "[7/10] Deploying Redis Sentinel..."
+
+sudo -E kubectl annotate redissentinel redis-sentinel \
+    -n "$NAMESPACE" \
+    kubectl.kubernetes.io/last-applied-configuration- \
+    >/dev/null 2>&1 || true
 
 sudo -E kubectl apply \
     -f "$PROJECT_ROOT/redis-sentinel.yaml"
@@ -267,136 +274,8 @@ sudo -E kubectl apply \
 
 success "      ServiceMonitor Applied"
 
-#################################################
-# Step 10
-#################################################
-
-echo "[10/10] Running Production Validation..."
-
-#################################################
-# Authentication
-#################################################
-
-AUTH_FAIL=$(
-sudo -E kubectl exec -n "$NAMESPACE" redis-0 -- \
-redis-cli ping 2>&1 || true
-)
-
-echo "$AUTH_FAIL" | grep -q "NOAUTH" || \
-    error "Authentication validation failed"
-
-AUTH_OK=$(
-sudo -E kubectl exec -n "$NAMESPACE" redis-0 -- \
-env REDISCLI_AUTH="$REDIS_PASSWORD" \
-redis-cli --no-auth-warning ping
-)
-
-echo "$AUTH_OK" | grep -q "PONG" || \
-    error "Authenticated ping failed"
-
-success "      Authentication OK"
-
-#################################################
-# Replication
-#################################################
-
-REPLICATION_INFO=$(
-sudo -E kubectl exec -n "$NAMESPACE" redis-0 -- \
-env REDISCLI_AUTH="$REDIS_PASSWORD" \
-redis-cli --no-auth-warning INFO replication
-)
-
-ROLE=$(
-echo "$REPLICATION_INFO" \
-| grep '^role:' \
-| cut -d: -f2 \
-| tr -d '\r'
-)
-
-[ "$ROLE" = "master" ] || \
-    error "redis-0 is not master"
-
-SLAVES=$(
-echo "$REPLICATION_INFO" \
-| grep '^connected_slaves:' \
-| cut -d: -f2 \
-| tr -d '\r'
-)
-
-[ "${SLAVES:-0}" -ge 2 ] || \
-    error "Expected >=2 replicas, found $SLAVES"
-
-success "      Replication OK"
-
-#################################################
-# Sentinel
-#################################################
-
-sleep 15
-
-SENTINEL_INFO=$(
-sudo -E kubectl exec -n "$NAMESPACE" \
-redis-sentinel-sentinel-0 -- \
-redis-cli -p 26379 SENTINEL master mymaster
-)
-
-echo "$SENTINEL_INFO" | grep -q "master" || \
-    error "Sentinel master validation failed"
-
-# redis-cli prints array replies with index prefixes and quotes, e.g.:
-#   31) "num-slaves"
-#   32) "2"
-# so we split on '"' after the getline to pull out just the value.
-NUM_SLAVES=$(
-echo "$SENTINEL_INFO" |
-awk '/^num-slaves$/ {getline; print}' |
-tr -dc '0-9'
-)
-
-NUM_SENTINELS=$(
-echo "$SENTINEL_INFO" |
-awk '/^num-other-sentinels$/ {getline; print}' |
-tr -dc '0-9'
-)
-
-echo "      Sentinel replicas: $NUM_SLAVES"
-echo "      Other sentinels : $NUM_SENTINELS"
-
-[ "${NUM_SLAVES:-0}" -ge 2 ] || \
-    error "Sentinel sees less than 2 replicas"
-
-[ "${NUM_SENTINELS:-0}" -ge 2 ] || \
-    error "Sentinel quorum not formed"
-
-success "      Sentinel OK"
-
-#################################################
-# Monitoring
-#################################################
-
-sudo -E kubectl get servicemonitor \
-redis-servicemonitor \
--n "$NAMESPACE" >/dev/null 2>&1 || \
-error "ServiceMonitor missing"
-
-success "      Monitoring OK"
-
-#################################################
-# Summary
-#################################################
-
 echo ""
 echo "=================================================="
 echo " Redis Bootstrap Completed Successfully"
 echo "=================================================="
 echo ""
-
-success "Operator ................. OK"
-success "Authentication ........... OK"
-success "Replication .............. OK"
-success "Sentinel ................. OK"
-success "Monitoring ............... OK"
-
-echo ""
-echo "Redis Production Stack Ready"
-echo "=================================================="

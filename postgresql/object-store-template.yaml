@@ -1,0 +1,30 @@
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+
+metadata:
+  name: shopixy-backup
+  namespace: postgresql
+
+spec:
+  configuration:
+    destinationPath: __MINIO_DESTINATION_PATH__
+    endpointURL: __MINIO_ENDPOINT__
+
+    s3Credentials:
+      accessKeyId:
+        name: minio-backup-secret
+        key: ACCESS_KEY_ID
+
+      secretAccessKey:
+        name: minio-backup-secret
+        key: ACCESS_SECRET_KEY
+
+    wal:
+      compression: zstd
+      maxParallel: 4
+
+    data:
+      compression: gzip
+      jobs: 2
+
+  retentionPolicy: 30d

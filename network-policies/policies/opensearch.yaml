@@ -1,0 +1,39 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+
+metadata:
+  name: opensearch
+  namespace: opensearch
+
+spec:
+  podSelector:
+    matchLabels:
+      opensearch.org/opensearch-cluster: shopixy-search
+
+  policyTypes:
+    - Ingress
+
+  ingress:
+    - from:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 9200
+
+        - protocol: TCP
+          port: 9300
+
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+
+metadata:
+  name: default-deny
+  namespace: opensearch
+
+spec:
+  podSelector: {}
+
+  policyTypes:
+    - Ingress

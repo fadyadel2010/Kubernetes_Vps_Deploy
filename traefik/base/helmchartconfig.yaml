@@ -1,0 +1,102 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+
+metadata:
+  name: traefik
+  namespace: kube-system
+
+spec:
+  valuesContent: |-
+    logs:
+      general:
+        level: INFO
+
+    providers:
+      kubernetesCRD:
+        enabled: true
+
+      kubernetesIngress:
+        enabled: true
+        publishedService:
+          enabled: true
+
+    ingressClass:
+      enabled: true
+      isDefaultClass: true
+
+    metrics:
+      prometheus:
+        enabled: true
+
+    deployment:
+      replicas: 1
+
+    service:
+      type: LoadBalancer
+
+    ports:
+      web:
+        expose:
+          default: true
+
+      websecure:
+        expose:
+          default: true
+
+      postgres:
+        port: 5432
+        exposedPort: 5432
+        protocol: TCP
+        expose:
+          default: true
+
+      redis:
+        port: 6379
+        exposedPort: 6379
+        protocol: TCP
+        expose:
+          default: true
+
+      rabbitmq:
+        port: 5672
+        exposedPort: 5672
+        protocol: TCP
+        expose:
+          default: true
+
+      rabbitmq-management:
+        port: 15672
+        exposedPort: 15672
+        protocol: TCP
+        expose:
+          default: true
+
+      opensearch:
+        port: 9200
+        exposedPort: 9200
+        protocol: TCP
+        expose:
+          default: true
+
+      minio:
+        port: 9000
+        exposedPort: 9000
+        protocol: TCP
+        expose:
+          default: true
+
+      mongo:
+        port: 27017
+        expose:
+          default: true
+        exposedPort: 27017
+        protocol: TCP
+
+    additionalArguments:
+      - "--entryPoints.postgres.address=:5432/tcp"
+      - "--entryPoints.redis.address=:6379/tcp"
+      - "--entryPoints.rabbitmq.address=:5672/tcp"
+      - "--entryPoints.rabbitmq-management.address=:15672/tcp"
+      - "--entryPoints.opensearch.address=:9200/tcp"
+      - "--entryPoints.minio.address=:9000/tcp"
+      - "--entryPoints.mongo.address=:27017/tcp"

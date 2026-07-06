@@ -1,0 +1,47 @@
+apiVersion: rabbitmq.com/v1beta1
+kind: Queue
+metadata:
+  name: orders
+  namespace: rabbitmq-lab
+
+spec:
+  name: orders
+
+  vhost: test
+
+  durable: true
+
+  rabbitmqClusterReference:
+    name: rabbitmq
+---
+apiVersion: rabbitmq.com/v1beta1
+kind: Queue
+metadata:
+  name: products
+  namespace: rabbitmq-lab
+
+spec:
+  name: products
+
+  vhost: test
+
+  durable: true
+
+  rabbitmqClusterReference:
+    name: rabbitmq
+---
+apiVersion: rabbitmq.com/v1beta1
+kind: Queue
+metadata:
+  name: notifications
+  namespace: rabbitmq-lab
+
+spec:
+  name: notifications
+
+  vhost: test
+
+  durable: true
+
+  rabbitmqClusterReference:
+    name: rabbitmq

@@ -1,0 +1,19 @@
+apiVersion: rabbitmq.com/v1beta1
+kind: Permission
+metadata:
+  name: shopixy-app
+  namespace: rabbitmq-lab
+
+spec:
+  vhost: test
+
+  userReference:
+    name: shopixy-app
+
+  permissions:
+    configure: ".*"
+    write: ".*"
+    read: ".*"
+
+  rabbitmqClusterReference:
+    name: rabbitmq

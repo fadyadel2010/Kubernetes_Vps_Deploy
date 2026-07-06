@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+
+metadata:
+  name: mongo
+  namespace: mongo
+
+spec:
+  podSelector:
+    matchLabels:
+      app: mongo
+
+  policyTypes:
+    - Ingress
+
+  ingress:
+    - from:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 27017
+
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+
+metadata:
+  name: default-deny
+  namespace: mongo
+
+spec:
+  podSelector: {}
+
+  policyTypes:
+    - Ingress

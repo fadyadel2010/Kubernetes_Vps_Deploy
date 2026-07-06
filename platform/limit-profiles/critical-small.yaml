@@ -1,0 +1,23 @@
+profile:
+  name: critical-small
+
+description: >
+  LimitRange profile for lightweight services.
+
+limits:
+
+  defaultRequest:
+    cpu: 250m
+    memory: 512Mi
+
+  default:
+    cpu: 500m
+    memory: 1Gi
+
+  max:
+    cpu: 1000m
+    memory: 2Gi
+
+  min:
+    cpu: 100m
+    memory: 256Mi

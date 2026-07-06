@@ -1,0 +1,23 @@
+profile:
+  name: critical-large
+
+description: >
+  LimitRange profile for large mission-critical workloads.
+
+limits:
+
+  defaultRequest:
+    cpu: 1000m
+    memory: 4Gi
+
+  default:
+    cpu: 2000m
+    memory: 8Gi
+
+  max:
+    cpu: 4000m
+    memory: 12Gi
+
+  min:
+    cpu: 500m
+    memory: 1Gi

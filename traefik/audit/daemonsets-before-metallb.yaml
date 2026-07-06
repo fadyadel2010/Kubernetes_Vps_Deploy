@@ -1,0 +1,250 @@
+apiVersion: v1
+items:
+- apiVersion: apps/v1
+  kind: DaemonSet
+  metadata:
+    annotations:
+      deprecated.daemonset.template.generation: "1"
+      objectset.rio.cattle.io/applied: H4sIAAAAAAAA/8xVUW8iNxD+K9U87y5wLBBW6kOURFXUHkHA9eWEoll7ABdjW/bsXlC0/73yQnJ7Kpek6kvFA7I9883MN9/MPgM69Sf5oKyBAtC50KsHkMBeGQkF3CIdrFkSQwIHYpTICMUzoDGWkZU1IR5t+RcJDsSZVzYTyKwpU7anIgYkP3233wz5dFvvoYBePUh++V0Z+euSfK0Evetn8EBQwL4qyRtiCqnEsCstepnurdmmztun44dggkPxMyxoEtBYkn6z1B2GHRQwkkMsczGaXk1z2Zfj6SAf0PiTnOJ4lF9NRiTGo0+jyQQSCLUQ1rC3WpPP9sPQQTNWUiBNgq2HAjaoA73jEmrxYUI+gPMeI+dYoRa6TN+JmE5pQn052cDJr4udhmNgOkTI4EhEir8X/gwHZLH745V9dO7fB22aBJgOTiNTi9kRsv5v0P+jlnQIxIrtwVaGz5N0LUQ8reyeDBStmBKI0VAZ8gGKr89Apm7/zwkvFzeP84fFChKoUVfxKs+H0CQ/WCyuZ7/dLTs2/az99fpdy9u75epxvnhYPXQsVzfzf9q8GbA1uZ93ww36WT7MBuM8u7qCZp2AOuA2Png0Yke+t9fKOfKpLou6n+XZIA5eazSvtJ5brcQRCrjfzCzPPQUyDK/a1mXKwqUxjQSc9Xxi6pW4ufUMRZ4PE9jZwJ3jRQBv2QqrX2pfJ+Ap2MoLivqL7SNRecXHG2uYnjh2UqDDUmnFik4ilRKKrzC7Wz1e336+n8G6aSKS88q2rhpDmJ1Hsx2sNK6SVHjFSqCGi1HCMQjWodt/Q5wpV+eZco8b679FiXV4h2bdJtyV16yzESABtpr8yyciCmyzIcFQwMwuxY5kpeNG21Pkv83RW03Zd21H4Z8nInUaTfs9cBGyXYl3TypwaPVxwrg5l3gtpTXhwejjZYd1nJTKSWRaskem7TFyEAdPme2X9uG0eZ6+GKxRaSw1QTGIW+ToYomLH2zbyWPkqu2QqLwnw7PqUJJ/KVRC0U9AUlCe5KUn0959ViFcuF4QyiMU/ab5OwAA//8W1B+3rwcAAA
+      objectset.rio.cattle.io/id: ""
+      objectset.rio.cattle.io/owner-gvk: /v1, Kind=Service
+      objectset.rio.cattle.io/owner-name: kubernetes-dashboard-kong-proxy
+      objectset.rio.cattle.io/owner-namespace: kubernetes-dashboard
+    creationTimestamp: "2026-06-09T19:27:30Z"
+    generation: 1
+    labels:
+      objectset.rio.cattle.io/hash: 5d3ab4c59894d0d69141e62d9a654875ec652577
+      svccontroller.k3s.cattle.io/nodeselector: "false"
+      svccontroller.k3s.cattle.io/svcname: kubernetes-dashboard-kong-proxy
+      svccontroller.k3s.cattle.io/svcnamespace: kubernetes-dashboard
+    name: svclb-kubernetes-dashboard-kong-proxy-9e7e0d7f
+    namespace: kube-system
+    resourceVersion: "788805"
+    uid: a00e2b5e-1e11-4ef2-b9b8-536f2e3921b8
+  spec:
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app: svclb-kubernetes-dashboard-kong-proxy-9e7e0d7f
+    template:
+      metadata:
+        labels:
+          app: svclb-kubernetes-dashboard-kong-proxy-9e7e0d7f
+          svccontroller.k3s.cattle.io/svcname: kubernetes-dashboard-kong-proxy
+          svccontroller.k3s.cattle.io/svcnamespace: kubernetes-dashboard
+      spec:
+        automountServiceAccountToken: false
+        containers:
+        - env:
+          - name: SRC_PORT
+            value: "443"
+          - name: SRC_RANGES
+            value: 0.0.0.0/0
+          - name: DEST_PROTO
+            value: TCP
+          - name: DEST_PORT
+            value: "443"
+          - name: DEST_IPS
+            value: 10.43.164.88
+          image: rancher/klipper-lb:v0.4.17
+          imagePullPolicy: IfNotPresent
+          name: lb-tcp-443
+          ports:
+          - containerPort: 443
+            hostPort: 443
+            name: lb-tcp-443
+            protocol: TCP
+          resources: {}
+          securityContext:
+            capabilities:
+              add:
+              - NET_ADMIN
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        priorityClassName: system-node-critical
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          sysctls:
+          - name: net.ipv4.ip_forward
+            value: "1"
+        serviceAccount: svclb
+        serviceAccountName: svclb
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane
+          operator: Exists
+        - key: CriticalAddonsOnly
+          operator: Exists
+    updateStrategy:
+      rollingUpdate:
+        maxSurge: 0
+        maxUnavailable: 1
+      type: RollingUpdate
+  status:
+    currentNumberScheduled: 1
+    desiredNumberScheduled: 1
+    numberAvailable: 1
+    numberMisscheduled: 0
+    numberReady: 1
+    observedGeneration: 1
+    updatedNumberScheduled: 1
+- apiVersion: apps/v1
+  kind: DaemonSet
+  metadata:
+    annotations:
+      deprecated.daemonset.template.generation: "1"
+      meta.helm.sh/release-name: prometheus
+      meta.helm.sh/release-namespace: prometheus
+    creationTimestamp: "2026-06-09T12:25:58Z"
+    generation: 1
+    labels:
+      app.kubernetes.io/component: metrics
+      app.kubernetes.io/instance: prometheus
+      app.kubernetes.io/managed-by: Helm
+      app.kubernetes.io/name: prometheus-node-exporter
+      app.kubernetes.io/part-of: prometheus-node-exporter
+      app.kubernetes.io/version: 1.11.1
+      helm.sh/chart: prometheus-node-exporter-4.55.0
+      release: prometheus
+    name: prometheus-prometheus-node-exporter
+    namespace: prometheus
+    resourceVersion: "751967"
+    uid: cb6f6b6f-774e-4353-bc4a-6a20422e410d
+  spec:
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        app.kubernetes.io/instance: prometheus
+        app.kubernetes.io/name: prometheus-node-exporter
+    template:
+      metadata:
+        annotations:
+          cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+        labels:
+          app.kubernetes.io/component: metrics
+          app.kubernetes.io/instance: prometheus
+          app.kubernetes.io/managed-by: Helm
+          app.kubernetes.io/name: prometheus-node-exporter
+          app.kubernetes.io/part-of: prometheus-node-exporter
+          app.kubernetes.io/version: 1.11.1
+          helm.sh/chart: prometheus-node-exporter-4.55.0
+          jobLabel: node-exporter
+          release: prometheus
+      spec:
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: eks.amazonaws.com/compute-type
+                  operator: NotIn
+                  values:
+                  - fargate
+                - key: type
+                  operator: NotIn
+                  values:
+                  - virtual-kubelet
+        automountServiceAccountToken: false
+        containers:
+        - args:
+          - --path.procfs=/host/proc
+          - --path.sysfs=/host/sys
+          - --path.rootfs=/host/root
+          - --path.udev.data=/host/root/run/udev/data
+          - --web.listen-address=[$(HOST_IP)]:9100
+          - --collector.filesystem.mount-points-exclude=^/(dev|proc|sys|run/containerd/.+|var/lib/docker/.+|var/lib/kubelet/.+)($|/)
+          - --collector.filesystem.fs-types-exclude=^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|sysfs|tracefs|erofs)$
+          env:
+          - name: HOST_IP
+            value: 0.0.0.0
+          image: quay.io/prometheus/node-exporter:v1.11.1-distroless
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: http-metrics
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          name: node-exporter
+          ports:
+          - containerPort: 9100
+            name: http-metrics
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: http-metrics
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources: {}
+          securityContext:
+            readOnlyRootFilesystem: true
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /host/proc
+            name: proc
+            readOnly: true
+          - mountPath: /host/sys
+            name: sys
+            readOnly: true
+          - mountPath: /host/root
+            mountPropagation: HostToContainer
+            name: root
+            readOnly: true
+        dnsPolicy: ClusterFirst
+        hostNetwork: true
+        hostPID: true
+        nodeSelector:
+          kubernetes.io/os: linux
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext:
+          fsGroup: 65534
+          runAsGroup: 65534
+          runAsNonRoot: true
+          runAsUser: 65534
+        serviceAccount: prometheus-prometheus-node-exporter
+        serviceAccountName: prometheus-prometheus-node-exporter
+        terminationGracePeriodSeconds: 30
+        tolerations:
+        - effect: NoSchedule
+          operator: Exists
+        volumes:
+        - hostPath:
+            path: /proc
+            type: ""
+          name: proc
+        - hostPath:
+            path: /sys
+            type: ""
+          name: sys
+        - hostPath:
+            path: /
+            type: ""
+          name: root
+    updateStrategy:
+      rollingUpdate:
+        maxSurge: 0
+        maxUnavailable: 1
+      type: RollingUpdate
+  status:
+    currentNumberScheduled: 1
+    desiredNumberScheduled: 1
+    numberAvailable: 1
+    numberMisscheduled: 0
+    numberReady: 1
+    observedGeneration: 1
+    updatedNumberScheduled: 1
+kind: List
+metadata:
+  resourceVersion: ""

@@ -18,7 +18,7 @@ groups:
             relativeTimeRange:
               from: 900
               to: 0
-            datasourceUid: ffom74f70o2rkb
+            datasourceUid: prometheus
             model:
               editorMode: code
               expr: changes(redis_instance_info{role="master"}[15m])

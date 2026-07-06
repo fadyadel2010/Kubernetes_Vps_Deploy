@@ -18,7 +18,7 @@ groups:
             relativeTimeRange:
               from: 600
               to: 0
-            datasourceUid: ffom74f70o2rkb
+            datasourceUid: prometheus
             model:
               editorMode: code
               expr: max(cnpg_pg_replication_lag)
@@ -71,5 +71,3 @@ groups:
 
         isPaused: false
 
-        notification_settings:
-          receiver: empty

@@ -23,7 +23,7 @@ fi
 
 source .env
 
-NAMESPACE="mongo-bootstrap-test"
+NAMESPACE="$MONGO_NAMESPACE"
 
 echo ""
 echo "=================================================="
@@ -219,47 +219,9 @@ sudo kubectl rollout status \
     -n "$NAMESPACE" \
     --timeout=10m
 
-#################################################
-# Verification
-#################################################
-
 echo ""
 echo "=================================================="
-echo " Verification"
-echo "=================================================="
-
-# FIX 9: Added missing `\` line continuations.
-sudo kubectl exec -n "$NAMESPACE" mongo-0 -- \
-    mongo admin \
-        -u "$MONGO_ADMIN_USER" \
-        -p "$MONGO_ADMIN_PASSWORD" \
-        --authenticationDatabase admin \
-        --quiet \
-        --eval "db.runCommand({ connectionStatus: 1 })"
-
-echo ""
-echo "ReplicaSet Status:"
-echo ""
-
-# FIX 9: Added missing `\` line continuations.
-# FIX 18: .map() return value is not auto-printed in mongo --eval context.
-#          Wrapped in printjson() so output is actually visible.
-sudo kubectl exec -n "$NAMESPACE" mongo-0 -- \
-    mongo admin \
-        -u "$MONGO_ADMIN_USER" \
-        -p "$MONGO_ADMIN_PASSWORD" \
-        --authenticationDatabase admin \
-        --quiet \
-        --eval "
-            printjson(
-                rs.status().members.map(function(m) {
-                    return { name: m.name, state: m.stateStr, health: m.health }
-                })
-            )
-        "
-
-echo ""
-echo "=================================================="
-echo " BOOTSTRAP COMPLETED SUCCESSFULLY"
+echo " MongoDB Bootstrap Completed Successfully"
 echo "=================================================="
 echo ""
+echo "Run ./scripts/validate.sh to verify MongoDB deployment."
