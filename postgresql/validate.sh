@@ -245,13 +245,46 @@ else
 fi
 
 ############################################################
-# WAL Archiving
+# Archiving Method Detection
+#
+# NOTE: This cluster archives WAL through the CNPG Barman
+# Cloud plugin (spec.plugins, method: plugin), as configured
+# in bootstrap.sh. Under that architecture the instance
+# manager calls the plugin's ArchiveWAL gRPC method directly
+# and NEVER invokes PostgreSQL's classic archive_command —
+# so archive_mode/archive_command are not the live archiving
+# path, and pg_stat_archiver counters (archived_count,
+# failed_count) do not reflect real archiving health. We
+# detect plugin-based archiving from the Cluster spec and
+# adjust which checks are authoritative accordingly, instead
+# of treating classic-archiving config/stats as ground truth
+# for a cluster that isn't using classic archiving at all.
+############################################################
+
+PLUGIN_NAME=$(
+$KUBECTL get cluster "$CLUSTER_NAME" \
+    -n "$NAMESPACE" \
+    -o jsonpath='{.spec.plugins[?(@.name=="barman-cloud.cloudnative-pg.io")].name}' \
+    2>/dev/null || true
+)
+
+if [ -n "$PLUGIN_NAME" ]; then
+    ARCHIVING_MODE="plugin"
+else
+    ARCHIVING_MODE="classic"
+fi
+
+success "Archiving Mode Detected: ${ARCHIVING_MODE}"
+
+############################################################
+# WAL Level (always meaningful, regardless of archiving mode)
 ############################################################
 
 WAL_LEVEL=$(
 $KUBECTL exec \
     -n "$NAMESPACE" \
     "$PRIMARY" \
+    -c postgres \
     -- psql -U postgres -At \
     -c "SHOW wal_level;"
 )
@@ -265,50 +298,98 @@ fi
 success "WAL Level: ${WAL_LEVEL}"
 
 ############################################################
-# Archive Mode
+# Classic Archive Config (informational only in plugin mode)
+#
+# NOTE: In plugin mode, archive_mode/archive_command may
+# still show as configured (Postgres defaults or leftover
+# config), but they are NOT the mechanism actually moving
+# WAL to object storage, so we no longer gate validation
+# success on them — we just report them for visibility.
 ############################################################
 
 ARCHIVE_MODE=$(
 $KUBECTL exec \
     -n "$NAMESPACE" \
     "$PRIMARY" \
+    -c postgres \
     -- psql -U postgres -At \
     -c "SHOW archive_mode;"
 )
 
 ARCHIVE_MODE=$(echo "$ARCHIVE_MODE" | tr -d '[:space:]')
 
-[ "$ARCHIVE_MODE" = "on" ] || \
-    error "archive_mode is disabled"
-
-success "Archive Mode Enabled"
-
-############################################################
-# Archive Command
-############################################################
-
 ARCHIVE_COMMAND=$(
 $KUBECTL exec \
     -n "$NAMESPACE" \
     "$PRIMARY" \
+    -c postgres \
     -- psql -U postgres -At \
     -c "SHOW archive_command;"
 )
 
-if [ -z "$ARCHIVE_COMMAND" ]; then
-    error "archive_command is empty"
+if [ "$ARCHIVING_MODE" = "classic" ]; then
+
+    [ "$ARCHIVE_MODE" = "on" ] || \
+        error "archive_mode is disabled"
+
+    success "Archive Mode Enabled"
+
+    if [ -z "$ARCHIVE_COMMAND" ]; then
+        error "archive_command is empty"
+    fi
+
+    success "Archive Command Configured"
+
+else
+    echo "Archive Mode (informational)    : ${ARCHIVE_MODE}"
+    echo "Archive Command (informational) : ${ARCHIVE_COMMAND:-<not set>}"
+    success "Classic archive_mode/archive_command noted (not authoritative in plugin mode)"
 fi
 
-success "Archive Command Configured"
+############################################################
+# ContinuousArchiving Condition
+#
+# This is the authoritative, operator-maintained signal for
+# WAL archiving health in BOTH classic and plugin mode, so we
+# always gate on it regardless of ARCHIVING_MODE.
+############################################################
+
+CONTINUOUS_ARCHIVING=$(
+$KUBECTL get cluster "$CLUSTER_NAME" \
+    -n "$NAMESPACE" \
+    -o jsonpath='{.status.conditions[?(@.type=="ContinuousArchiving")].status}' \
+    2>/dev/null || true
+)
+
+if [ "$CONTINUOUS_ARCHIVING" != "True" ]; then
+
+    CONTINUOUS_ARCHIVING_MSG=$(
+    $KUBECTL get cluster "$CLUSTER_NAME" \
+        -n "$NAMESPACE" \
+        -o jsonpath='{.status.conditions[?(@.type=="ContinuousArchiving")].message}' \
+        2>/dev/null || true
+    )
+
+    error "WAL archiving is not healthy (ContinuousArchiving=${CONTINUOUS_ARCHIVING:-unknown}): ${CONTINUOUS_ARCHIVING_MSG}"
+
+fi
+
+success "Continuous Archiving Healthy"
 
 ############################################################
 # pg_stat_archiver
+#
+# NOTE: In plugin mode these counters do not reflect the
+# actual archiving path (see note above), so failed_count
+# here is expected noise, not a signal — we only warn on it
+# in classic mode, where it genuinely indicates trouble.
 ############################################################
 
 ARCHIVED_COUNT=$(
 $KUBECTL exec \
     -n "$NAMESPACE" \
     "$PRIMARY" \
+    -c postgres \
     -- psql -U postgres -At \
     -c "SELECT archived_count FROM pg_stat_archiver;"
 )
@@ -317,6 +398,7 @@ FAILED_COUNT=$(
 $KUBECTL exec \
     -n "$NAMESPACE" \
     "$PRIMARY" \
+    -c postgres \
     -- psql -U postgres -At \
     -c "SELECT failed_count FROM pg_stat_archiver;"
 )
@@ -325,6 +407,7 @@ LAST_ARCHIVED=$(
 $KUBECTL exec \
     -n "$NAMESPACE" \
     "$PRIMARY" \
+    -c postgres \
     -- psql -U postgres -At \
     -c "SELECT last_archived_wal FROM pg_stat_archiver;"
 )
@@ -333,7 +416,17 @@ echo "Archived WAL Files : ${ARCHIVED_COUNT}"
 echo "Failed WAL Files   : ${FAILED_COUNT}"
 echo "Last Archived WAL  : ${LAST_ARCHIVED}"
 
-success "WAL Archiver Healthy"
+if [ "$ARCHIVING_MODE" = "classic" ]; then
+    if [ -n "$FAILED_COUNT" ] && [ "$FAILED_COUNT" -gt 0 ]; then
+        warn "pg_stat_archiver reports ${FAILED_COUNT} failed archive attempt(s) on this instance (may be historical, e.g. from before a fix or a past failover)"
+    fi
+else
+    if [ -n "$FAILED_COUNT" ] && [ "$FAILED_COUNT" -gt 0 ]; then
+        echo "(pg_stat_archiver failed_count is expected to be non-zero in plugin mode and does not indicate a problem; ContinuousArchiving above is the authoritative signal)"
+    fi
+fi
+
+success "WAL Archiver Stats Collected"
 
 ############################################################
 # Backups
@@ -359,13 +452,23 @@ success "Completed Backups: ${COMPLETED_BACKUPS}"
 
 ############################################################
 # Scheduled Backup
+#
+# NOTE: jsonpath '{.items[0]...}' errors out (array index out
+# of bounds) when zero ScheduledBackup resources exist, which
+# would abort the script with a raw kubectl error under set -e
+# instead of the intended clean error message below. Using
+# '{.items[*]...}' plus a shell-side pick of the first field
+# degrades gracefully to an empty string instead.
 ############################################################
 
 SCHEDULE_NAME=$(
 $KUBECTL get scheduledbackup \
     -n "$NAMESPACE" \
-    -o jsonpath='{.items[0].metadata.name}'
+    -o jsonpath='{.items[*].metadata.name}' \
+    2>/dev/null || true
 )
+
+SCHEDULE_NAME=$(echo "$SCHEDULE_NAME" | awk '{print $1}')
 
 [ -n "$SCHEDULE_NAME" ] || \
     error "ScheduledBackup resource not found"
@@ -471,7 +574,7 @@ success "PgBouncer ................. OK"
 success "Services .................. OK"
 success "Traefik TCP ............... OK"
 success "Monitoring ............... OK"
-success "WAL Archiving ............. OK"
+success "WAL Archiving (${ARCHIVING_MODE}) ..... OK"
 success "Backups ................... OK"
 success "Scheduled Backups ......... OK"
 

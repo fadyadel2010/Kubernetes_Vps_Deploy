@@ -21,8 +21,7 @@ REQUIRED_FILES=(
   "operator/values.yaml"
   "cluster/opensearch-cluster.yaml"
   "monitoring/exporter-values.yaml"
-  "monitoring/exporter-secret.yaml"
-  "snapshots/minio-s3-secret.yaml"
+  "snapshots/s3-keystore-secret.yaml"
   "snapshots/snapshot-secret.yaml"
   "snapshots/snapshot-cronjob.yaml"
 )
@@ -107,25 +106,17 @@ sudo -E helm repo update
 echo
 echo "=== OpenSearch Operator ==="
 
-if sudo -E helm status opensearch-operator \
-  -n opensearch-system >/dev/null 2>&1
-then
+sudo kubectl create namespace opensearch-system \
+  --dry-run=client -o yaml | sudo kubectl apply -f -
 
-  echo "[SKIP] Operator already installed"
+sudo -E helm upgrade --install \
+  opensearch-operator \
+  opensearch/opensearch-operator \
+  --version 3.0.2 \
+  -n opensearch-system \
+  -f "${ROOT_DIR}/operator/values.yaml"
 
-else
-
-  sudo kubectl create namespace opensearch-system \
-    --dry-run=client -o yaml | sudo kubectl apply -f -
-
-  sudo -E helm install opensearch-operator \
-    opensearch/opensearch-operator \
-    -n opensearch-system \
-    -f "${ROOT_DIR}/operator/values.yaml"
-
-  echo "[OK] Operator installed"
-
-fi
+echo "[OK] Operator installed"
 
 sudo kubectl rollout status \
   deployment/opensearch-operator \
@@ -134,6 +125,21 @@ sudo kubectl rollout status \
 
 echo "[OK] Operator ready"
 
+echo
+echo "[INFO] Validating Operator resources..."
+
+sudo kubectl get clusterrole opensearch-operator >/dev/null \
+  || { echo "[ERROR] ClusterRole missing"; exit 1; }
+
+sudo kubectl get clusterrolebinding opensearch-operator >/dev/null \
+  || { echo "[ERROR] ClusterRoleBinding missing"; exit 1; }
+
+sudo kubectl get deployment opensearch-operator \
+  -n opensearch-system >/dev/null \
+  || { echo "[ERROR] Operator deployment missing"; exit 1; }
+
+echo "[OK] Operator validation passed"
+
 ##
 # Cluster
 ##
@@ -141,23 +147,100 @@ echo "[OK] Operator ready"
 echo
 echo "=== OpenSearch Cluster ==="
 
-if sudo kubectl get opensearchclusters.opensearch.org \
-  shopixy-search \
-  -n opensearch >/dev/null 2>&1
+echo
+echo "[INFO] Detecting OpenSearch API Group..."
+
+OPENSEARCH_CRD="opensearchclusters.opensearch.org"
+
+echo "[OK] Using API: ${OPENSEARCH_CRD}"
+
+echo "[OK] Using API: ${OPENSEARCH_CRD}"
+
+if sudo kubectl get "${OPENSEARCH_CRD}" \
+    shopixy-search \
+    -n opensearch >/dev/null 2>&1
 then
 
-  echo "[SKIP] Cluster already exists"
+    echo "[SKIP] Cluster already exists"
 
 else
 
-  sudo kubectl apply \
-    -f "${ROOT_DIR}/cluster/opensearch-cluster.yaml"
+    sudo kubectl apply \
+      -f "${ROOT_DIR}/cluster/opensearch-cluster.yaml"
 
-  echo "[OK] Cluster manifest applied"
+    echo "[OK] Cluster manifest applied"
 
 fi
 
-echo "[OK] Cluster ready"
+echo "[INFO] Waiting for OpenSearch cluster..."
+
+sudo kubectl wait \
+  --for=jsonpath='{.status.phase}'=RUNNING \
+  "${OPENSEARCH_CRD}/shopixy-search" \
+  -n opensearch \
+  --timeout=30m
+
+echo "[OK] Cluster is running"
+
+##
+# Snapshot Repository
+##
+
+echo
+echo "=== Snapshot Repository ==="
+
+"${ROOT_DIR}/snapshots/register-repository.sh"
+
+echo "[OK] Snapshot repository ready"
+
+##
+# Snapshot Job Secret
+##
+
+echo
+echo "=== Snapshot Job Secret ==="
+
+OS_PASS=$(sudo kubectl get secret shopixy-search-admin-password \
+  -n opensearch \
+  -o jsonpath='{.data.password}' | base64 -d)
+
+OS_USER=$(sudo kubectl get secret shopixy-search-admin-password \
+  -n opensearch \
+  -o jsonpath='{.data.username}' | base64 -d)
+
+ES_URI="https://${OS_USER}:${OS_PASS}@shopixy-search:9200"
+
+sudo kubectl create secret generic opensearch-snapshot-job \
+  -n opensearch \
+  --from-literal=OS_USER=admin \
+  --from-literal=OS_PASS="${OS_PASS}" \
+  --dry-run=client -o yaml | sudo kubectl apply -f -
+
+echo "[OK] Snapshot job secret created"
+
+##
+# Exporter Secret
+##
+
+echo
+echo "=== Exporter Secret ==="
+
+OS_USER=$(sudo kubectl get secret shopixy-search-admin-password \
+  -n opensearch \
+  -o jsonpath='{.data.username}' | base64 -d)
+
+OS_PASS=$(sudo kubectl get secret shopixy-search-admin-password \
+  -n opensearch \
+  -o jsonpath='{.data.password}' | base64 -d)
+
+sudo kubectl create secret generic opensearch-exporter-secret \
+  -n opensearch \
+  --from-literal=ES_USER="${OS_USER}" \
+  --from-literal=ES_PASS="${OS_PASS}" \
+  --dry-run=client -o yaml | sudo kubectl apply -f -
+
+echo "[OK] Exporter secret created"
+
 
 ##
 # Backup Infrastructure
@@ -167,7 +250,6 @@ echo
 echo "=== Backup Infrastructure ==="
 
 sudo kubectl apply -f "${ROOT_DIR}/snapshots/minio-s3-secret.yaml"
-sudo kubectl apply -f "${ROOT_DIR}/snapshots/snapshot-secret.yaml"
 sudo kubectl apply -f "${ROOT_DIR}/snapshots/snapshot-cronjob.yaml"
 
 echo "[INFO] Verifying backup resources..."
@@ -205,13 +287,13 @@ echo "[OK] Backup infrastructure ready"
 echo
 echo "=== Monitoring ==="
 
-sudo kubectl apply -f "${ROOT_DIR}/monitoring/exporter-secret.yaml"
 
 sudo -E helm upgrade --install \
   opensearch-exporter \
   prometheus-community/prometheus-elasticsearch-exporter \
   -n opensearch \
-  -f "${ROOT_DIR}/monitoring/exporter-values.yaml"
+  -f "${ROOT_DIR}/monitoring/exporter-values.yaml" \
+  --set-string es.uri="${ES_URI}"
 
 sudo kubectl rollout status \
   deployment/opensearch-exporter-prometheus-elasticsearch-exporter \
@@ -219,6 +301,37 @@ sudo kubectl rollout status \
   --timeout=20m
 
 echo "[OK] Monitoring ready"
+
+echo
+echo "[INFO] Waiting for exporter to authenticate..."
+
+for i in {1..24}; do
+
+    STATUS=$(sudo kubectl exec -n opensearch \
+        deploy/opensearch-exporter-prometheus-elasticsearch-exporter \
+        -- wget -qO- http://localhost:9108/metrics \
+        | awk '/^elasticsearch_clusterinfo_up/{print $2}')
+
+    if [ "$STATUS" = "1" ]; then
+        echo "[OK] Exporter successfully connected to OpenSearch"
+        break
+    fi
+
+    if [ "$i" -eq 24 ]; then
+        echo "[ERROR] Exporter failed to authenticate with OpenSearch"
+        exit 1
+    fi
+
+    sleep 5
+done
+
+sudo kubectl get servicemonitor \
+  -n prometheus \
+  opensearch-exporter-prometheus-elasticsearch-exporter \
+  >/dev/null \
+  || { echo "[ERROR] ServiceMonitor missing"; exit 1; }
+
+echo "[OK] ServiceMonitor verified"
 
 echo
 echo "======================================================"

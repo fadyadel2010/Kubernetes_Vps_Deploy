@@ -193,18 +193,55 @@ section "Datasources"
 ok "Datasource ConfigMap ready"
 
 ##################################################
-# Dashboards
+# Dashboard Provider
 ##################################################
 
-section "Dashboards"
+section "Dashboard Provider"
 
-"${KUBECTL[@]}" create configmap grafana-dashboards \
-    --from-file="$PROVISIONING_DIR/dashboards" \
+"${KUBECTL[@]}" create configmap grafana-dashboard-provider \
+    --from-file="$PROVISIONING_DIR/dashboards/provider.yaml" \
     -n "$NAMESPACE" \
     --dry-run=client -o yaml \
 | "${KUBECTL[@]}" apply -f -
 
-ok "Dashboard ConfigMap ready"
+ok "Dashboard Provider ready"
+
+##################################################
+# Dashboards
+##################################################
+
+create_or_replace_configmap() {
+
+    local NAME="$1"
+    local FILE="$2"
+
+    "${KUBECTL[@]}" delete configmap \
+        "$NAME" \
+        -n "$NAMESPACE" \
+        --ignore-not-found >/dev/null 2>&1 || true
+
+    "${KUBECTL[@]}" create configmap \
+        "$NAME" \
+        --from-file="$FILE" \
+        -n "$NAMESPACE"
+}
+
+section "Dashboards"
+
+for DASHBOARD in "$PROVISIONING_DIR"/dashboards/*.json
+do
+    NAME=$(basename "$DASHBOARD" .json)
+
+    log "Provisioning dashboard: ${NAME}"
+
+    create_or_replace_configmap \
+        "grafana-dashboard-${NAME}" \
+        "$DASHBOARD"
+
+    ok "${NAME} dashboard ready"
+done
+
+ok "All dashboards provisioned"
 
 ##################################################
 # Alerting ConfigMap
@@ -337,6 +374,19 @@ if [ -z "$HEALTHY" ]; then
     exit 1
 fi
 ok "Health API"
+
+##################################################
+# Dashboard Verification
+##################################################
+
+section "Dashboard Verification"
+
+if "${KUBECTL[@]}" logs deployment/grafana -n "$NAMESPACE" | grep -q "Cannot read directory"; then
+    error "Dashboard provisioning failed"
+    exit 1
+fi
+
+ok "Dashboard provisioning verified"
 
 ##################################################
 # Ingress

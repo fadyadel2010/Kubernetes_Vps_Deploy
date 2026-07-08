@@ -94,19 +94,18 @@ echo "[OK] OpenSearch health API = green"
 # --- Snapshot Repository Check ---
 echo "[INFO] Checking snapshot repository registration..."
 
-SNAP_REPO_STATUS=$($KUBECTL exec -n opensearch "$OPENSEARCH_POD" \
+echo "[INFO] Verifying snapshot repository..."
+
+VERIFY_RESULT=$($KUBECTL exec -n opensearch "$OPENSEARCH_POD" \
   -- curl -sk \
-    -u "admin:${OS_PASS}" \
-    "https://localhost:9200/_snapshot" \
-  | jq 'keys | length')
+  -u "admin:${OS_PASS}" \
+  -X POST \
+  https://localhost:9200/_snapshot/shopixy-snapshots/_verify)
 
-if [ "$SNAP_REPO_STATUS" -eq 0 ]; then
-  echo
-  echo "[ERROR] No snapshot repositories registered in OpenSearch"
-  exit 1
-fi
+echo "$VERIFY_RESULT" | jq -e '.nodes' >/dev/null
 
-echo "[OK] Snapshot repository registered ($SNAP_REPO_STATUS repo(s) found)"
+echo "[OK] Snapshot repository verification passed"
+
 
 echo "[INFO] Verifying exporter deployment..."
 

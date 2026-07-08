@@ -1,7 +1,8 @@
 replicaCount: 1
 
+# Populated dynamically by bootstrap.sh via --set-string es.uri
 es:
-  uri: "https://admin:NPI7POQ3FM7UXY6V2NTIC2KSLD@shopixy-search:9200"
+  uri: "https://shopixy-search:9200"
 
   all: true
   indices: true

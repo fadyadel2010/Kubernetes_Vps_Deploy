@@ -1,0 +1,101 @@
+apiVersion: opensearch.org/v1
+kind: OpenSearchCluster
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"opensearch.org/v1","kind":"OpenSearchCluster","metadata":{"annotations":{},"creationTimestamp":"2026-06-14T16:57:25Z","finalizers":["opensearch.org/migration","Opensearch"],"generation":2,"name":"shopixy-search","namespace":"opensearch","resourceVersion":"275701","uid":"d32921b9-efef-46ed-8f8b-8cbd5937612b"},"spec":{"bootstrap":{"diskSize":"0","resources":{}},"confMgmt":{"smartScaler":false},"dashboards":{"enable":true,"image":"docker.io/opensearchproject/opensearch-dashboards:2.8.0","opensearchCredentialsSecret":{"name":""},"replicas":1,"resources":{},"service":{"type":"ClusterIP"},"version":"2.8.0"},"general":{"httpPort":9200,"image":"docker.io/opensearchproject/opensearch:2.8.0","monitoring":{},"pluginsList":["repository-s3"],"serviceName":"shopixy-search","setVMMaxMapCount":true,"version":"2.8.0"},"initHelper":{"resources":{}},"nodePools":[{"component":"core","diskSize":"50Gi","jvm":"-Xms2g -Xmx2g","persistence":{"pvc":{"accessModes":["ReadWriteOnce"],"storageClass":"local-path"}},"replicas":3,"resources":{"limits":{"cpu":"2","memory":"4Gi"},"requests":{"cpu":"1","memory":"4Gi"}},"roles":["master","data","ingest"]}],"security":{"tls":{"http":{"caSecret":{"name":""},"duration":"8760h0m0s","generate":true,"rotateDaysBeforeExpiry":-1,"secret":{"name":""}},"transport":{"caSecret":{"name":""},"duration":"8760h0m0s","generate":true,"perNode":true,"rotateDaysBeforeExpiry":-1,"secret":{"name":""}}}}},"status":{"adminsecretcreated":true,"availableNodes":3,"componentsStatus":[],"contextsecretcreated":true,"health":"green","initialized":true,"phase":"RUNNING","version":"2.8.0"}}
+  creationTimestamp: "2026-06-14T16:57:25Z"
+  deletionGracePeriodSeconds: 0
+  deletionTimestamp: "2026-06-15T17:45:35Z"
+  finalizers:
+  - opensearch.org/migration
+  - Opensearch
+  generation: 5
+  name: shopixy-search
+  namespace: opensearch
+  resourceVersion: "398698"
+  uid: d32921b9-efef-46ed-8f8b-8cbd5937612b
+spec:
+  bootstrap:
+    diskSize: "0"
+    resources: {}
+  confMgmt:
+    smartScaler: false
+  dashboards:
+    enable: true
+    image: docker.io/opensearchproject/opensearch-dashboards:2.8.0
+    opensearchCredentialsSecret:
+      name: ""
+    replicas: 1
+    resources: {}
+    service:
+      type: ClusterIP
+    version: 2.8.0
+  general:
+    httpPort: 9200
+    image: docker.io/opensearchproject/opensearch:2.8.0
+    keystore:
+    - keyMappings:
+        access_key: s3.client.default.access_key
+        secret_key: s3.client.default.secret_key
+      secret:
+        name: opensearch-s3-credentials
+    monitoring: {}
+    pluginsList:
+    - repository-s3
+    serviceName: shopixy-search
+    setVMMaxMapCount: true
+    version: 2.8.0
+  initHelper:
+    resources: {}
+  nodePools:
+  - component: core
+    diskSize: 50Gi
+    jvm: -Xms2g -Xmx2g
+    persistence:
+      pvc:
+        accessModes:
+        - ReadWriteOnce
+        storageClass: local-path
+    replicas: 3
+    resources:
+      limits:
+        cpu: "2"
+        memory: 4Gi
+      requests:
+        cpu: "1"
+        memory: 4Gi
+    roles:
+    - master
+    - data
+    - ingest
+  security:
+    tls:
+      http:
+        caSecret:
+          name: ""
+        duration: 8760h0m0s
+        generate: true
+        rotateDaysBeforeExpiry: -1
+        secret:
+          name: ""
+      transport:
+        caSecret:
+          name: ""
+        duration: 8760h0m0s
+        generate: true
+        perNode: true
+        rotateDaysBeforeExpiry: -1
+        secret:
+          name: ""
+status:
+  adminsecretcreated: true
+  availableNodes: 3
+  componentsStatus:
+  - component: RollingRestart
+    status: Finished
+  contextsecretcreated: true
+  health: green
+  initialized: true
+  phase: RUNNING
+  version: 2.8.0
