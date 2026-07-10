@@ -61,6 +61,17 @@ spec:
                 configMapKeyRef:
                   name: grafana-config
                   key: GF_SECURITY_ALLOW_EMBEDDING
+            - name: TELEGRAM_BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-secret
+                  key: telegram-bot-token
+
+            - name: TELEGRAM_CHAT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-secret
+                  key: telegram-chat-id
           startupProbe:
             httpGet:
               path: /api/health

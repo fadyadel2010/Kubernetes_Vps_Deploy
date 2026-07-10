@@ -42,7 +42,6 @@ REQUIRED_FILES=(
     "grafana-service.yaml"
     "grafana-deployment.yaml"
     "grafana-ingress.yaml"
-    "configmaps/grafana-alerting.yaml"
 )
 
 REQUIRED_PROVISIONING_DIRS=(datasources dashboards alerting contactpoints policies)
@@ -244,12 +243,25 @@ done
 ok "All dashboards provisioned"
 
 ##################################################
-# Alerting ConfigMap
+# Alert Rules
 ##################################################
 
-section "Alerting"
-"${KUBECTL[@]}" apply -f "$SCRIPT_DIR/configmaps/grafana-alerting.yaml"
-ok "Alerting ConfigMap ready"
+section "Alert Rules"
+
+"${KUBECTL[@]}" create configmap grafana-alerting \
+    --from-file="$PROVISIONING_DIR/alerting" \
+    -n "$NAMESPACE" \
+    --dry-run=client -o yaml \
+| "${KUBECTL[@]}" apply -f -
+
+ok "Alert Rules ConfigMap ready"
+
+if "${KUBECTL[@]}" get configmap grafana-alerting -n "$NAMESPACE" -o yaml | grep -q "ffom74f70o2rkb"; then
+    error "Legacy Grafana datasource UID detected inside Alert Rules ConfigMap."
+    exit 1
+fi
+
+ok "Alert Rules datasource UID validated"
 
 ##################################################
 # Persistent Volume
@@ -423,7 +435,7 @@ ok "Ingress verified"
 "${KUBECTL[@]}" get configmap grafana-config -n "$NAMESPACE" >/dev/null
 ok "Configuration verified"
 
-"${KUBECTL[@]}" get configmap grafana-alerting-postgres -n "$NAMESPACE" >/dev/null
+"${KUBECTL[@]}" get configmap grafana-alerting -n "$NAMESPACE" >/dev/null
 ok "Alerting ConfigMap verified"
 
 section "Grafana Bootstrap Completed Successfully"
