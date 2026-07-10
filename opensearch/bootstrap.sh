@@ -21,9 +21,6 @@ REQUIRED_FILES=(
   "operator/values.yaml"
   "cluster/opensearch-cluster.yaml"
   "monitoring/exporter-values.yaml"
-  "snapshots/s3-keystore-secret.yaml"
-  "snapshots/snapshot-secret.yaml"
-  "snapshots/snapshot-cronjob.yaml"
 )
 
 for FILE in "${REQUIRED_FILES[@]}"
@@ -154,8 +151,6 @@ OPENSEARCH_CRD="opensearchclusters.opensearch.org"
 
 echo "[OK] Using API: ${OPENSEARCH_CRD}"
 
-echo "[OK] Using API: ${OPENSEARCH_CRD}"
-
 if sudo kubectl get "${OPENSEARCH_CRD}" \
     shopixy-search \
     -n opensearch >/dev/null 2>&1
@@ -183,40 +178,84 @@ sudo kubectl wait \
 echo "[OK] Cluster is running"
 
 ##
-# Snapshot Repository
+# Cluster Health Validation (GREEN)
 ##
 
 echo
-echo "=== Snapshot Repository ==="
+echo "[INFO] Waiting for GREEN cluster..."
 
-"${ROOT_DIR}/snapshots/register-repository.sh"
+for i in {1..120}; do
 
-echo "[OK] Snapshot repository ready"
+    HEALTH=$(sudo kubectl get opensearchclusters.opensearch.org \
+      shopixy-search \
+      -n opensearch \
+      -o jsonpath='{.status.health}' 2>/dev/null || true)
+
+    if [ "$HEALTH" = "green" ]; then
+        echo "[OK] Cluster is GREEN"
+        break
+    fi
+
+    if [ "$i" -eq 120 ]; then
+        echo "[ERROR] Cluster never reached GREEN"
+        exit 1
+    fi
+
+    sleep 10
+
+done
 
 ##
-# Snapshot Job Secret
+# Dashboards Validation
 ##
 
 echo
-echo "=== Snapshot Job Secret ==="
+echo "[INFO] Waiting for Dashboards..."
+
+sudo kubectl rollout status \
+  deployment/shopixy-search-dashboards \
+  -n opensearch \
+  --timeout=20m
+
+echo "[OK] Dashboards Ready"
+
+##
+# Security Job Validation
+##
+
+echo
+echo "[INFO] Waiting for Security Initialization..."
+
+sudo kubectl wait \
+  --for=condition=complete \
+  job/shopixy-search-securityconfig-update \
+  -n opensearch \
+  --timeout=20m
+
+echo "[OK] Security Initialized"
+
+##
+# In-Cluster Health Validation
+##
 
 OS_PASS=$(sudo kubectl get secret shopixy-search-admin-password \
   -n opensearch \
   -o jsonpath='{.data.password}' | base64 -d)
 
-OS_USER=$(sudo kubectl get secret shopixy-search-admin-password \
+echo
+echo "[INFO] Validating OpenSearch API..."
+
+sudo kubectl exec \
   -n opensearch \
-  -o jsonpath='{.data.username}' | base64 -d)
+  shopixy-search-core-0 \
+  -- \
+  curl -sk \
+  -u admin:${OS_PASS} \
+  https://localhost:9200/_cluster/health?pretty \
+  | jq .
 
-ES_URI="https://${OS_USER}:${OS_PASS}@shopixy-search:9200"
+echo "[OK] OpenSearch API reachable"
 
-sudo kubectl create secret generic opensearch-snapshot-job \
-  -n opensearch \
-  --from-literal=OS_USER=admin \
-  --from-literal=OS_PASS="${OS_PASS}" \
-  --dry-run=client -o yaml | sudo kubectl apply -f -
-
-echo "[OK] Snapshot job secret created"
 
 ##
 # Exporter Secret
@@ -241,45 +280,6 @@ sudo kubectl create secret generic opensearch-exporter-secret \
 
 echo "[OK] Exporter secret created"
 
-
-##
-# Backup Infrastructure
-##
-
-echo
-echo "=== Backup Infrastructure ==="
-
-sudo kubectl apply -f "${ROOT_DIR}/snapshots/minio-s3-secret.yaml"
-sudo kubectl apply -f "${ROOT_DIR}/snapshots/snapshot-cronjob.yaml"
-
-echo "[INFO] Verifying backup resources..."
-
-sudo kubectl get secret opensearch-s3-credentials \
-  -n opensearch \
-  --no-headers \
-  -o name \
-  | grep -q "secret/opensearch-s3-credentials" \
-  || { echo "[ERROR] Secret opensearch-s3-credentials not found"; exit 1; }
-echo "[OK] Secret opensearch-s3-credentials exists"
-
-sudo kubectl get secret opensearch-snapshot-job \
-  -n opensearch \
-  --no-headers \
-  -o name \
-  | grep -q "secret/opensearch-snapshot-job" \
-  || { echo "[ERROR] Secret opensearch-snapshot-job not found"; exit 1; }
-echo "[OK] Secret opensearch-snapshot-job exists"
-
-sudo kubectl get cronjob opensearch-snapshot \
-  -n opensearch \
-  --no-headers \
-  -o name \
-  | grep -q "cronjob.batch/opensearch-snapshot" \
-  || { echo "[ERROR] CronJob opensearch-snapshot not found"; exit 1; }
-echo "[OK] CronJob opensearch-snapshot exists"
-
-echo "[OK] Backup infrastructure ready"
-
 ##
 # Monitoring
 ##
@@ -287,6 +287,18 @@ echo "[OK] Backup infrastructure ready"
 echo
 echo "=== Monitoring ==="
 
+OS_USER=$(sudo kubectl get secret shopixy-search-admin-password \
+  -n opensearch \
+  -o jsonpath='{.data.username}' | base64 -d)
+
+OS_PASS=$(sudo kubectl get secret shopixy-search-admin-password \
+  -n opensearch \
+  -o jsonpath='{.data.password}' | base64 -d)
+
+ES_URI="https://${OS_USER}:${OS_PASS}@shopixy-search:9200"
+
+echo
+echo "[INFO] Installing OpenSearch Exporter..."
 
 sudo -E helm upgrade --install \
   opensearch-exporter \
@@ -300,14 +312,19 @@ sudo kubectl rollout status \
   -n opensearch \
   --timeout=20m
 
+echo "[OK] Exporter Deployment Ready"
+
 echo "[OK] Monitoring ready"
 
 echo
 echo "[INFO] Waiting for exporter to authenticate..."
 
-for i in {1..24}; do
+echo "[INFO] Waiting for exporter connectivity..."
 
-    STATUS=$(sudo kubectl exec -n opensearch \
+for i in {1..60}; do
+
+    STATUS=$(sudo kubectl exec \
+        -n opensearch \
         deploy/opensearch-exporter-prometheus-elasticsearch-exporter \
         -- wget -qO- http://localhost:9108/metrics \
         | awk '/^elasticsearch_clusterinfo_up/{print $2}')
@@ -317,10 +334,12 @@ for i in {1..24}; do
         break
     fi
 
-    if [ "$i" -eq 24 ]; then
+    if [ "$i" -eq 60 ]; then
         echo "[ERROR] Exporter failed to authenticate with OpenSearch"
         exit 1
     fi
+
+    echo "[INFO] Exporter not ready yet... (${i}/60)"
 
     sleep 5
 done
@@ -332,6 +351,22 @@ sudo kubectl get servicemonitor \
   || { echo "[ERROR] ServiceMonitor missing"; exit 1; }
 
 echo "[OK] ServiceMonitor verified"
+
+##
+# Final Validation
+##
+
+echo
+echo "=== Final Validation ==="
+
+sudo kubectl get opensearchclusters.opensearch.org \
+  -n opensearch
+
+sudo kubectl get pods \
+  -n opensearch
+
+sudo kubectl get svc \
+  -n opensearch
 
 echo
 echo "======================================================"

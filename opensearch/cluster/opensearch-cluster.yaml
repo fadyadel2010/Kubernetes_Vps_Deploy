@@ -13,22 +13,6 @@ spec:
     image: docker.io/opensearchproject/opensearch:2.8.0
     setVMMaxMapCount: true
 
-    pluginsList:
-      - repository-s3
-
-    keystore:
-      - secret:
-          name: opensearch-s3-keystore
-
-    snapshotRepositories:
-      - name: shopixy-snapshots
-        type: s3
-        settings:
-          bucket: opensearch-snapshots
-          endpoint: http://minio.minio.svc.cluster.local:9000
-          protocol: http
-          path_style_access: "true"
-
   dashboards:
     enable: true
     replicas: 1

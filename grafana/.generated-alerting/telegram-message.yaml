@@ -1,0 +1,59 @@
+apiVersion: 1
+
+templates:
+  - orgId: 1
+
+    name: telegram.message
+
+    template: |
+      {{ define "telegram.message" }}
+
+      {{ if eq .Status "firing" }}
+      🚨 <b>ALERT FIRING</b>
+      {{ else }}
+      ✅ <b>ALERT RESOLVED</b>
+      {{ end }}
+
+      <b>Alert</b>: {{ .CommonLabels.alertname }}
+
+      {{- with .CommonLabels.severity }}
+      <b>Severity</b>: {{ . }}
+      {{- end }}
+
+      {{- with .CommonLabels.stack }}
+      <b>Stack</b>: {{ . }}
+      {{- end }}
+
+      {{- with .CommonLabels.namespace }}
+      <b>Namespace</b>: {{ . }}
+      {{- end }}
+
+      {{- with .CommonLabels.instance }}
+      <b>Instance</b>: {{ . }}
+      {{- end }}
+
+      {{- with .CommonAnnotations.summary }}
+
+      <b>Summary</b>
+      {{ . }}
+      {{- end }}
+
+      {{- with .CommonAnnotations.description }}
+
+      <b>Description</b>
+      {{ . }}
+      {{- end }}
+
+      {{ if gt (len .Alerts) 1 }}
+
+      <b>Affected Alerts ({{ len .Alerts }})</b>
+
+      {{ range .Alerts }}
+      • {{ .Labels.alertname }}
+      {{ end }}
+
+      {{ end }}
+
+      <b>Status</b>: {{ .Status }}
+
+      {{ end }}

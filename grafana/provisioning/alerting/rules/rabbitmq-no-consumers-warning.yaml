@@ -1,0 +1,79 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: RabbitMQ
+    folder: Infrastructure
+    interval: 1m
+
+    rules:
+      - uid: rabbitmqnoconsumers
+
+        title: RabbitMQ No Consumers
+
+        condition: C
+
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              editorMode: code
+              expr: |
+                (
+                  max(rabbitmq_queue_messages) > 100
+                )
+                and
+                (
+                  max(rabbitmq_queue_consumers) == 0
+                )
+              instant: true
+              intervalMs: 1000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 0
+                    type: gt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+
+              datasource:
+                type: __expr__
+                uid: __expr__
+
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: threshold
+
+        noDataState: OK
+        execErrState: Alerting
+
+        for: 5m
+
+        annotations:
+          summary: RabbitMQ has queued messages but no consumers
+
+        labels:
+          severity: warning
+          stack: rabbitmq
+
+        isPaused: false

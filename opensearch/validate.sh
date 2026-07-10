@@ -4,133 +4,113 @@ set -euo pipefail
 
 export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
-KUBECTL="sudo -E kubectl --kubeconfig=${KUBECONFIG}"
-
-for BIN in kubectl curl jq
-do
-  if ! command -v "$BIN" >/dev/null 2>&1
-  then
-    echo "[ERROR] Missing dependency: $BIN"
-    exit 1
-  fi
-done
-
 echo
 echo "======================================"
 echo " OpenSearch Validation"
 echo "======================================"
 echo
 
-
-
-##
-# Validation
-##
+OPENSEARCH_CRD="opensearchclusters.opensearch.org"
 
 echo
 echo "=== Validation ==="
 
-$KUBECTL get opensearchclusters.opensearch.org \
-  -n opensearch
+sudo kubectl get "${OPENSEARCH_CRD}" -n opensearch
 
-# --- Cluster Health Check (CRD status) ---
-HEALTH=$($KUBECTL get opensearchclusters.opensearch.org \
-  shopixy-search \
-  -n opensearch \
-  -o jsonpath='{.status.health}')
+HEALTH=$(sudo kubectl get "${OPENSEARCH_CRD}" \
+    shopixy-search \
+    -n opensearch \
+    -o jsonpath='{.status.health}')
 
 if [ "$HEALTH" != "green" ]; then
-  echo
-  echo "[ERROR] Cluster health = $HEALTH (expected: green)"
-  exit 1
+    echo "[ERROR] Cluster health = ${HEALTH}"
+    exit 1
 fi
 
 echo "[OK] Cluster health = green"
 
-# --- Resolve shared vars once (Pod + Password) ---
-# Secret name follows operator convention: <cluster-name>-admin-password
-# Confirmed via: kubectl get secret -n opensearch | grep admin
-OPENSEARCH_POD=$($KUBECTL get pod \
-  -n opensearch \
+echo
+echo "[INFO] Waiting for all OpenSearch Pods to become Ready..."
+
+sudo kubectl wait \
+  --for=condition=Ready \
+  pod \
   -l opensearch.org/opensearch-cluster=shopixy-search \
-  --field-selector=status.phase=Running \
-  -o jsonpath='{.items[0].metadata.name}')
-
-if [ -z "$OPENSEARCH_POD" ]; then
-  echo
-  echo "[ERROR] No running OpenSearch pod found"
-  exit 1
-fi
-
-echo "[INFO] Using pod: $OPENSEARCH_POD"
-
-OS_PASS=$($KUBECTL get secret shopixy-search-admin-password \
   -n opensearch \
-  -o jsonpath='{.data.password}' | base64 -d)
+  --timeout=15m
 
-if [ -z "$OS_PASS" ]; then
-  echo
-  echo "[ERROR] Could not retrieve admin password from secret shopixy-search-admin-password"
-  exit 1
-fi
+echo "[OK] All OpenSearch Pods are Ready"
 
-# --- Cluster Health API Check ---
-echo "[INFO] Checking OpenSearch cluster health API..."
+POD=$(sudo kubectl get pod \
+    -n opensearch \
+    -l opensearch.org/opensearch-cluster=shopixy-search \
+    --field-selector=status.phase=Running \
+    -o jsonpath='{.items[0].metadata.name}')
 
-CLUSTER_HEALTH=$($KUBECTL exec -n opensearch "$OPENSEARCH_POD" \
-  -- curl -sk \
-    -u "admin:${OS_PASS}" \
-    "https://localhost:9200/_cluster/health" \
-  | jq -r '.status')
+echo "[INFO] Using pod: ${POD}"
 
-if [ "$CLUSTER_HEALTH" != "green" ]; then
-  echo
-  echo "[ERROR] OpenSearch health API returned: $CLUSTER_HEALTH (expected: green)"
-  exit 1
-fi
-
-echo "[OK] OpenSearch health API = green"
-
-# --- Snapshot Repository Check ---
-echo "[INFO] Checking snapshot repository registration..."
-
-echo "[INFO] Verifying snapshot repository..."
-
-VERIFY_RESULT=$($KUBECTL exec -n opensearch "$OPENSEARCH_POD" \
-  -- curl -sk \
-  -u "admin:${OS_PASS}" \
-  -X POST \
-  https://localhost:9200/_snapshot/shopixy-snapshots/_verify)
-
-echo "$VERIFY_RESULT" | jq -e '.nodes' >/dev/null
-
-echo "[OK] Snapshot repository verification passed"
-
-
-echo "[INFO] Verifying exporter deployment..."
-
-$KUBECTL get deployment \
-  opensearch-exporter-prometheus-elasticsearch-exporter \
-  -n opensearch \
-  --no-headers \
-  | grep -q "1/1"
-
-echo "[OK] Exporter deployment healthy"
-
-# --- Summary ---
-echo
-$KUBECTL get pods \
-  -n opensearch \
-  -l opensearch.org/opensearch-cluster=shopixy-search
-
-$KUBECTL get cronjob \
-  -n opensearch
-
-$KUBECTL get servicemonitor \
-  -A | grep opensearch || true
+OS_PASS=$(sudo kubectl get secret \
+    shopixy-search-admin-password \
+    -n opensearch \
+    -o jsonpath='{.data.password}' | base64 -d)
 
 echo
-echo "======================================================"
-echo " OpenSearch Validation Completed Successfully"
-echo "======================================================"
+echo "[INFO] Checking OpenSearch Cluster Health API..."
+
+STATUS=$(sudo kubectl exec \
+    -n opensearch \
+    "${POD}" \
+    -- \
+    curl -sk \
+    -u admin:${OS_PASS} \
+    https://localhost:9200/_cluster/health \
+    | jq -r '.status')
+
+if [ "$STATUS" != "green" ]; then
+    echo "[ERROR] OpenSearch API status = ${STATUS}"
+    exit 1
+fi
+
+echo "[OK] OpenSearch Health API = green"
+
+echo
+echo "[INFO] Checking Exporter Connectivity..."
+
+EXPORTER_STATUS=$(sudo kubectl exec \
+    -n opensearch \
+    deploy/opensearch-exporter-prometheus-elasticsearch-exporter \
+    -- \
+    wget -qO- http://localhost:9108/metrics \
+    | awk '/^elasticsearch_clusterinfo_up/{print $2}')
+
+if [ "$EXPORTER_STATUS" != "1" ]; then
+    echo "[ERROR] Exporter is NOT connected to OpenSearch"
+    exit 1
+fi
+
+echo "[OK] Exporter connected successfully"
+
+echo
+echo "[INFO] Checking ServiceMonitor..."
+
+sudo kubectl get servicemonitor \
+    opensearch-exporter-prometheus-elasticsearch-exporter \
+    -n prometheus >/dev/null
+
+echo "[OK] ServiceMonitor exists"
+
+echo
+echo "[INFO] Checking OpenSearch Services..."
+
+sudo kubectl get svc -n opensearch
+
+echo
+echo "[INFO] Checking OpenSearch Pods..."
+
+sudo kubectl get pods -n opensearch
+
+echo
+echo "======================================"
+echo " OpenSearch Validation PASSED"
+echo "======================================"
 echo

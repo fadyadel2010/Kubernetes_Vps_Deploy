@@ -44,8 +44,15 @@ REQUIRED_FILES=(
     "grafana-ingress.yaml"
 )
 
-REQUIRED_PROVISIONING_DIRS=(datasources dashboards alerting contactpoints policies)
+REQUIRED_PROVISIONING_DIRS=(
+    datasources
+    dashboards
+    alerting
+)
+
 PROVISIONING_DIR="$SCRIPT_DIR/provisioning"
+ALERTING_SOURCE_DIR="$PROVISIONING_DIR/alerting"
+ALERTING_BUILD_DIR="$SCRIPT_DIR/.generated-alerting"
 
 ##################################################
 # Logging helpers
@@ -103,6 +110,60 @@ done
 ok "Provisioning directories verified"
 
 ##################################################
+# Alerting Build
+##################################################
+# The alerting provisioning tree now lives as:
+#   provisioning/alerting/{rules,contactpoints,policies,templates}
+# We flatten it into a single build directory so it can be shipped
+# as one ConfigMap and validated as one unit.
+
+section "Alerting Build"
+
+rm -rf "$ALERTING_BUILD_DIR"
+mkdir -p "$ALERTING_BUILD_DIR"
+
+copy_alerting_files() {
+
+    local SUBDIR="$1"
+
+    if [ -d "$ALERTING_SOURCE_DIR/$SUBDIR" ]; then
+        find "$ALERTING_SOURCE_DIR/$SUBDIR" \
+            -maxdepth 1 \
+            -type f \
+            \( -name "*.yaml" -o -name "*.yml" \) \
+            -exec cp {} "$ALERTING_BUILD_DIR/" \;
+    fi
+}
+
+copy_alerting_files rules
+copy_alerting_files contactpoints
+copy_alerting_files policies
+copy_alerting_files templates
+
+# Guard against silent overwrites: two subdirectories contributing a
+# file with the same basename would clobber each other during the
+# flatten above with no warning.
+DUPLICATES=$(find "$ALERTING_SOURCE_DIR" -mindepth 2 -maxdepth 2 -type f \( -name "*.yaml" -o -name "*.yml" \) -printf "%f\n" 2>/dev/null | sort | uniq -d || true)
+
+if [ -n "$DUPLICATES" ]; then
+    error "Duplicate alerting filenames detected across provisioning/alerting subdirectories:"
+    echo "$DUPLICATES" >&2
+    exit 1
+fi
+
+RULES_COUNT=$(find "$ALERTING_SOURCE_DIR/rules" -type f 2>/dev/null | wc -l)
+CONTACTPOINTS_COUNT=$(find "$ALERTING_SOURCE_DIR/contactpoints" -type f 2>/dev/null | wc -l)
+POLICIES_COUNT=$(find "$ALERTING_SOURCE_DIR/policies" -type f 2>/dev/null | wc -l)
+TEMPLATES_COUNT=$(find "$ALERTING_SOURCE_DIR/templates" -type f 2>/dev/null | wc -l)
+
+printf "[OK] %-15s %3d file(s)\n" "Rules" "$RULES_COUNT"
+printf "[OK] %-15s %3d file(s)\n" "Contact Points" "$CONTACTPOINTS_COUNT"
+printf "[OK] %-15s %3d file(s)\n" "Policies" "$POLICIES_COUNT"
+printf "[OK] %-15s %3d file(s)\n" "Templates" "$TEMPLATES_COUNT"
+
+ok "Alerting build completed"
+
+##################################################
 # Alerting Provisioning Validation
 ##################################################
 # Grafana's alerting provisioner crashes the entire pod on startup if any
@@ -111,17 +172,17 @@ ok "Provisioning directories verified"
 # "receiver: empty"). We catch that here, before touching the cluster,
 # instead of finding out via a CrashLoopBackOff.
 
-ALERTING_CONFIGMAP="$SCRIPT_DIR/configmaps/grafana-alerting.yaml"
+ALERTING_CONFIGMAP="$ALERTING_BUILD_DIR"
 
 # Grafana always has a built-in default contact point; anything provisioned
 # is layered on top of it.
 KNOWN_RECEIVERS=("grafana-default-email")
 
-# Collect names of contact points actually defined under provisioning/contactpoints.
+# Collect names of contact points actually defined under provisioning/alerting/contactpoints.
 while IFS= read -r NAME; do
     NAME="$(echo "$NAME" | sed -E 's/^[^:]*:[[:space:]]*//' | tr -d '"'"'"'')"
     [ -n "$NAME" ] && KNOWN_RECEIVERS+=("$NAME")
-done < <(find "$PROVISIONING_DIR/contactpoints" -maxdepth 1 -type f \( -name '*.yaml' -o -name '*.yml' \) \
+done < <(find "$ALERTING_SOURCE_DIR/contactpoints" -maxdepth 1 -type f \( -name '*.yaml' -o -name '*.yml' \) \
     -exec grep -h -E '^\s*-?\s*name:\s*' {} + 2>/dev/null || true)
 
 is_known_receiver() {
@@ -139,15 +200,16 @@ while IFS= read -r RAW_LINE; do
     [ -z "$RECEIVER" ] && continue
 
     if ! is_known_receiver "$RECEIVER"; then
-        error "Alerting config references unknown receiver: '${RECEIVER}' (no matching contact point in provisioning/contactpoints/)"
+        error "Alerting config references unknown receiver: '${RECEIVER}' (no matching contact point in provisioning/alerting/contactpoints/)"
         VALIDATION_ERRORS=$((VALIDATION_ERRORS + 1))
     fi
-done < <(grep -E '^\s*receiver:\s*' "$ALERTING_CONFIGMAP" 2>/dev/null || true)
+done < <(find "$ALERTING_CONFIGMAP" -type f \( -name "*.yaml" -o -name "*.yml" \) \
+    -exec grep -h -E '^\s*receiver:\s*' {} + 2>/dev/null || true)
 
 if [ "$VALIDATION_ERRORS" -gt 0 ]; then
-    error "Found ${VALIDATION_ERRORS} invalid receiver reference(s) in $(basename "$ALERTING_CONFIGMAP")."
+    error "Found ${VALIDATION_ERRORS} invalid receiver reference(s) in the generated alerting build."
     error "Grafana will CrashLoopBackOff on this exact issue if deployed as-is."
-    error "Fix it by either: (1) defining a matching contact point under provisioning/contactpoints/,"
+    error "Fix it by either: (1) defining a matching contact point under provisioning/alerting/contactpoints/,"
     error "or (2) removing the 'notification_settings' override from the affected rule(s) to use the default receiver."
     exit 1
 fi
@@ -249,7 +311,7 @@ ok "All dashboards provisioned"
 section "Alert Rules"
 
 "${KUBECTL[@]}" create configmap grafana-alerting \
-    --from-file="$PROVISIONING_DIR/alerting" \
+    --from-file="$ALERTING_BUILD_DIR" \
     -n "$NAMESPACE" \
     --dry-run=client -o yaml \
 | "${KUBECTL[@]}" apply -f -
@@ -446,10 +508,29 @@ section "Grafana Bootstrap Completed Successfully"
 
 section "Provisioning Summary"
 
-for DIR in "${REQUIRED_PROVISIONING_DIRS[@]}"; do
-    COUNT=$(find "$PROVISIONING_DIR/$DIR" -type f | wc -l)
-    printf "[OK] %-15s %3d file(s)\n" "$DIR" "$COUNT"
-done
+printf "[OK] %-15s %3d file(s)\n" \
+    "Datasources" \
+    "$(find "$PROVISIONING_DIR/datasources" -type f | wc -l)"
+
+printf "[OK] %-15s %3d file(s)\n" \
+    "Dashboards" \
+    "$(find "$PROVISIONING_DIR/dashboards" -type f | wc -l)"
+
+printf "[OK] %-15s %3d file(s)\n" \
+    "Rules" \
+    "$(find "$ALERTING_SOURCE_DIR/rules" -type f 2>/dev/null | wc -l)"
+
+printf "[OK] %-15s %3d file(s)\n" \
+    "Contact Points" \
+    "$(find "$ALERTING_SOURCE_DIR/contactpoints" -type f 2>/dev/null | wc -l)"
+
+printf "[OK] %-15s %3d file(s)\n" \
+    "Policies" \
+    "$(find "$ALERTING_SOURCE_DIR/policies" -type f 2>/dev/null | wc -l)"
+
+printf "[OK] %-15s %3d file(s)\n" \
+    "Templates" \
+    "$(find "$ALERTING_SOURCE_DIR/templates" -type f 2>/dev/null | wc -l)"
 
 ##################################################
 # Final Summary
@@ -479,6 +560,6 @@ echo "--- Persistent Volume ---"
 
 echo
 echo "--- ConfigMaps ---"
-"${KUBECTL[@]}" get configmap grafana-config grafana-alerting-postgres -n "$NAMESPACE"
+"${KUBECTL[@]}" get configmap grafana-config grafana-alerting -n "$NAMESPACE"
 
 section "Grafana Production Bootstrap Completed Successfully"

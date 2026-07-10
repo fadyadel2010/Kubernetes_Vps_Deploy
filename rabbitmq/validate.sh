@@ -219,7 +219,7 @@ done
 # Monitor Check
 ############################################################
 
-kubectl get endpoints rabbitmq-metrics -n rabbitmq
+sudo kubectl get endpoints rabbitmq-metrics -n rabbitmq
 
 ############################################################
 # Cluster Status (functional check)

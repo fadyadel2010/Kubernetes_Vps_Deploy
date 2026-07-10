@@ -1,0 +1,84 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: OpenSearch
+    folder: Infrastructure
+    interval: 1m
+
+    rules:
+      - uid: opensearchdiskcritical
+
+        title: OpenSearch Disk Usage High Critical
+
+        condition: C
+
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              editorMode: code
+              expr: |
+                max(
+                  (
+                    (
+                      elasticsearch_filesystem_data_size_bytes
+                      -
+                      elasticsearch_filesystem_data_available_bytes
+                    )
+                    /
+                    elasticsearch_filesystem_data_size_bytes
+                  ) * 100
+                )
+              instant: true
+              intervalMs: 1000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 90
+                    type: gte
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+
+              datasource:
+                type: __expr__
+                uid: __expr__
+
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: threshold
+
+        noDataState: Alerting
+        execErrState: Alerting
+
+        for: 5m
+
+        annotations:
+          summary: OpenSearch disk usage is above 90%
+          description: OpenSearch data disk utilization has exceeded 90% for more than 5 minutes. Cluster stability, shard allocation and indexing operations may be impacted.
+
+        labels:
+          severity: critical
+          stack: opensearch
+
+        isPaused: false

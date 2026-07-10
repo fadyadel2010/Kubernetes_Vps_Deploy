@@ -14,22 +14,19 @@ spec:
     - Ingress
 
   ingress:
+
+    # PostgreSQL Clients
     - from:
         - namespaceSelector: {}
       ports:
         - protocol: TCP
           port: 5432
 
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-
-metadata:
-  name: default-deny
-  namespace: postgresql
-
-spec:
-  podSelector: {}
-
-  policyTypes:
-    - Ingress
+    # CloudNativePG Operator
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: cnpg-system
+      ports:
+        - protocol: TCP
+          port: 8000

@@ -1,0 +1,72 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: Redis
+    folder: Infrastructure
+    interval: 1m
+
+    rules:
+      - uid: redisclusterdown
+
+        title: Redis Cluster Down
+
+        condition: C
+
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus
+            model:
+              editorMode: code
+              expr: count(redis_up == 1)
+              instant: true
+              intervalMs: 1000
+              legendFormat: __auto
+              maxDataPoints: 43200
+              range: false
+              refId: A
+
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params:
+                      - 3
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+
+              datasource:
+                type: __expr__
+                uid: __expr__
+
+              expression: A
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: C
+              type: threshold
+
+        noDataState: Alerting
+        execErrState: Alerting
+
+        for: 2m
+
+        annotations:
+          summary: Redis cluster has fewer than 3 healthy nodes
+
+        labels:
+          severity: critical
+          stack: redis
+
+        isPaused: false

@@ -26,11 +26,21 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 
 metadata:
-  name: default-deny
+  name: prometheus-operator
   namespace: prometheus
 
 spec:
-  podSelector: {}
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: prometheus-operator
 
   policyTypes:
     - Ingress
+
+  ingress:
+    - from:
+        - namespaceSelector: {}
+
+      ports:
+        - protocol: TCP
+          port: 10250
