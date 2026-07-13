@@ -1,9 +1,0 @@
-apiVersion: postgresql.cnpg.io/v1
-kind: Backup
-metadata:
-  name: first-real-backup
-  namespace: postgresql
-spec:
-  cluster:
-    name: shopixy-postgres
-  method: barmanObjectStore

@@ -1,9 +1,0 @@
-priority:
-  name: monitoring
-
-value: 50000
-
-globalDefault: false
-
-description: >
-  Monitoring and observability services.

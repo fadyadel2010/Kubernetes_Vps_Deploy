@@ -1,9 +1,0 @@
-priority:
-  name: critical-small
-
-value: 80000
-
-globalDefault: false
-
-description: >
-  Priority for lightweight production services.

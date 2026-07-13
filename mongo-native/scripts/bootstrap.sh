@@ -417,30 +417,42 @@ do
     then
 
         PRIMARY=$(
-        sudo kubectl exec \
-            -n "$NAMESPACE" \
-            mongo-0 \
-            -- \
-            mongo admin \
-            -u "$MONGO_ADMIN_USER" \
-            -p "$MONGO_ADMIN_PASSWORD" \
-            --authenticationDatabase admin \
-            --quiet \
-            --eval "print(rs.isMaster().primary)" \
-        2>/dev/null | tail -n1
-        )
+sudo kubectl exec \
+    -n "$NAMESPACE" \
+    mongo-0 \
+    -- \
+    mongo admin \
+    -u "$MONGO_ADMIN_USER" \
+    -p "$MONGO_ADMIN_PASSWORD" \
+    --authenticationDatabase admin \
+    --quiet \
+    --eval '
+        var m = db.isMaster();
+
+        if (m.primary) {
+            print(m.primary);
+        }
+    ' \
+2>/dev/null | tail -n1
+)
 
     else
 
         PRIMARY=$(
-        sudo kubectl exec \
-            -n "$NAMESPACE" \
-            mongo-0 \
-            -- \
-            mongo --quiet \
-            --eval "print(rs.isMaster().primary)" \
-        2>/dev/null | tail -n1
-        )
+sudo kubectl exec \
+    -n "$NAMESPACE" \
+    mongo-0 \
+    -- \
+    mongo --quiet \
+    --eval '
+        var m = db.isMaster();
+
+        if (m.primary) {
+            print(m.primary);
+        }
+    ' \
+2>/dev/null | tail -n1
+)
 
     fi
 

@@ -294,89 +294,181 @@ done
 # Topology Operator TLS Trust
 ###############################################
 
-# FIX 9: RabbitmqCluster.spec.tls.caSecretName only tells the RabbitMQ
-# *server* which cert/key to serve — it is NOT automatically consumed by
-# the Messaging Topology Operator. The operator only trusts CA certs that
-# are physically mounted into its own pod's trust store at /etc/ssl/certs/.
-# Without this, every Vhost/Exchange/Queue/User/Permission/Binding declare
-# call fails with:
-#   x509: certificate signed by unknown authority
-# We copy the CA cert into the operator's namespace and mount it into the
-# deployment here, idempotently, so re-running bootstrap.sh is a no-op if
-# it's already configured.
 log "Configuring Messaging Topology Operator to trust RabbitMQ CA"
 
-HAS_CA_VOLUME="$(sudo kubectl get deployment "$TOPOLOGY_OPERATOR_DEPLOYMENT" \
-    -n "$OPERATOR_NAMESPACE" \
-    -o jsonpath="{.spec.template.spec.volumes[?(@.name=='$TOPOLOGY_CA_SECRET_NAME')].name}" \
-    2>/dev/null || true)"
+NEED_CA_UPDATE=false
 
-if [ "$HAS_CA_VOLUME" = "$TOPOLOGY_CA_SECRET_NAME" ]; then
-    log "Topology Operator already trusts the RabbitMQ CA — skipping"
+############################################################
+# Compare CA fingerprints
+############################################################
+
+if ! sudo kubectl get secret "$TOPOLOGY_CA_SECRET_NAME" \
+    -n "$OPERATOR_NAMESPACE" >/dev/null 2>&1
+then
+
+    log "Topology Operator CA secret missing"
+
+    NEED_CA_UPDATE=true
+
 else
-    log "Copying RabbitMQ CA into $OPERATOR_NAMESPACE namespace"
 
-    CA_TMP_FILE="$(mktemp)"
-    trap 'rm -f "$CA_TMP_FILE"' RETURN
+    SRC_FP=$(
+        sudo kubectl get secret rabbitmq-ca-secret \
+            -n "$NAMESPACE" \
+            -o jsonpath='{.data.ca\.crt}' \
+        | base64 -d \
+        | openssl x509 -noout -fingerprint -sha256
+    )
 
-    sudo kubectl get secret rabbitmq-ca-secret -n "$NAMESPACE" \
-        -o jsonpath='{.data.ca\.crt}' | base64 -d > "$CA_TMP_FILE"
+    DST_FP=$(
+        sudo kubectl get secret "$TOPOLOGY_CA_SECRET_NAME" \
+            -n "$OPERATOR_NAMESPACE" \
+            -o jsonpath='{.data.ca\.crt}' \
+        | base64 -d \
+        | openssl x509 -noout -fingerprint -sha256
+    )
 
-    sudo kubectl create secret generic "$TOPOLOGY_CA_SECRET_NAME" \
+    if [ "$SRC_FP" != "$DST_FP" ]
+    then
+        log "RabbitMQ CA changed"
+
+        NEED_CA_UPDATE=true
+    fi
+
+fi
+
+############################################################
+# Update Secret
+############################################################
+
+if [ "$NEED_CA_UPDATE" = true ]
+then
+
+    TMP_CA="$(mktemp)"
+
+    trap 'rm -f "$TMP_CA"' EXIT
+
+    sudo kubectl get secret rabbitmq-ca-secret \
+        -n "$NAMESPACE" \
+        -o jsonpath='{.data.ca\.crt}' \
+        | base64 -d \
+        > "$TMP_CA"
+
+    sudo kubectl delete secret \
+        "$TOPOLOGY_CA_SECRET_NAME" \
         -n "$OPERATOR_NAMESPACE" \
-        --from-file=ca.crt="$CA_TMP_FILE" \
-        --dry-run=client -o yaml | sudo kubectl apply -f -
+        --ignore-not-found
 
-    rm -f "$CA_TMP_FILE"
-
-    log "Patching Messaging Topology Operator deployment to mount the CA"
-
-    sudo kubectl -n "$OPERATOR_NAMESPACE" patch deployment "$TOPOLOGY_OPERATOR_DEPLOYMENT" --patch "{
-      \"spec\": {
-        \"template\": {
-          \"spec\": {
-            \"containers\": [{
-              \"name\": \"manager\",
-              \"volumeMounts\": [{
-                \"mountPath\": \"$TOPOLOGY_CA_MOUNT_PATH\",
-                \"name\": \"$TOPOLOGY_CA_SECRET_NAME\",
-                \"subPath\": \"ca.crt\"
-              }]
-            }],
-            \"volumes\": [{
-              \"name\": \"$TOPOLOGY_CA_SECRET_NAME\",
-              \"secret\": {
-                \"defaultMode\": 420,
-                \"secretName\": \"$TOPOLOGY_CA_SECRET_NAME\"
-              }
-            }]
-          }
-        }
-      }
-    }"
-
-    log "Waiting for Messaging Topology Operator to restart with CA trust"
-    sudo kubectl rollout status \
-        deployment/"$TOPOLOGY_OPERATOR_DEPLOYMENT" \
+    sudo kubectl create secret generic \
+        "$TOPOLOGY_CA_SECRET_NAME" \
         -n "$OPERATOR_NAMESPACE" \
-        --timeout=300s
+        --from-file=ca.crt="$TMP_CA"
 
-    # Re-run the webhook readiness wait — the patch causes a fresh pod, and
-    # the new pod's webhook server needs the same startup grace period as
-    # the initial install did above.
-    log "Waiting for Messaging Topology Operator webhook to be ready after restart"
-    for i in $(seq 1 30); do
-        if sudo kubectl get validatingwebhookconfigurations \
-            topology.rabbitmq.com >/dev/null 2>&1; then
-            break
-        fi
-        if [ "$i" -eq 30 ]; then
-            log "ERROR: Topology Operator webhook not ready after restart"
-            exit 1
-        fi
-        sleep 2
-    done
-    sleep 5
+    rm -f "$TMP_CA"
+
+fi
+
+############################################################
+# Ensure Volume Exists
+############################################################
+
+HAS_VOLUME=$(
+sudo kubectl get deployment \
+"$TOPOLOGY_OPERATOR_DEPLOYMENT" \
+-n "$OPERATOR_NAMESPACE" \
+-o jsonpath="{.spec.template.spec.volumes[*].name}" \
+| tr ' ' '\n' \
+| grep -x "$TOPOLOGY_CA_SECRET_NAME" || true
+)
+
+if [ -z "$HAS_VOLUME" ]
+then
+
+log "Adding CA volume"
+
+sudo kubectl patch deployment \
+"$TOPOLOGY_OPERATOR_DEPLOYMENT" \
+-n "$OPERATOR_NAMESPACE" \
+--type='json' \
+-p="[
+{
+\"op\":\"add\",
+\"path\":\"/spec/template/spec/volumes/-\",
+\"value\":{
+\"name\":\"$TOPOLOGY_CA_SECRET_NAME\",
+\"secret\":{
+\"secretName\":\"$TOPOLOGY_CA_SECRET_NAME\"
+}
+}
+}
+]"
+
+fi
+
+############################################################
+# Ensure VolumeMount Exists
+############################################################
+
+HAS_MOUNT=$(
+sudo kubectl get deployment \
+"$TOPOLOGY_OPERATOR_DEPLOYMENT" \
+-n "$OPERATOR_NAMESPACE" \
+-o jsonpath="{.spec.template.spec.containers[0].volumeMounts[*].mountPath}" \
+| tr ' ' '\n' \
+| grep -x "$TOPOLOGY_CA_MOUNT_PATH" || true
+)
+
+if [ -z "$HAS_MOUNT" ]
+then
+
+log "Adding CA mount"
+
+sudo kubectl patch deployment \
+"$TOPOLOGY_OPERATOR_DEPLOYMENT" \
+-n "$OPERATOR_NAMESPACE" \
+--type='json' \
+-p="[
+{
+\"op\":\"add\",
+\"path\":\"/spec/template/spec/containers/0/volumeMounts/-\",
+\"value\":{
+\"name\":\"$TOPOLOGY_CA_SECRET_NAME\",
+\"mountPath\":\"$TOPOLOGY_CA_MOUNT_PATH\",
+\"subPath\":\"ca.crt\"
+}
+}
+]"
+
+fi
+
+############################################################
+# Restart if needed
+############################################################
+
+if [ "$NEED_CA_UPDATE" = true ] || \
+   [ -z "$HAS_VOLUME" ] || \
+   [ -z "$HAS_MOUNT" ]
+then
+
+log "Restarting Messaging Topology Operator"
+
+sudo kubectl rollout restart \
+deployment/"$TOPOLOGY_OPERATOR_DEPLOYMENT" \
+-n "$OPERATOR_NAMESPACE"
+
+sudo kubectl rollout status \
+deployment/"$TOPOLOGY_OPERATOR_DEPLOYMENT" \
+-n "$OPERATOR_NAMESPACE" \
+--timeout=300s
+
+log "Waiting for webhook"
+
+sleep 10
+
+else
+
+log "Topology Operator already trusts current RabbitMQ CA"
+
 fi
 
 ###############################################
@@ -399,6 +491,59 @@ sudo kubectl wait \
   rabbitmqcluster/rabbitmq \
   -n rabbitmq \
   --timeout=900s
+
+###############################################
+# Wait RabbitMQ Management API
+###############################################
+
+log "Waiting for RabbitMQ Management HTTPS API"
+
+READY=0
+
+for i in $(seq 1 90)
+do
+
+    if sudo kubectl exec \
+        -n rabbitmq \
+        rabbitmq-server-0 \
+        -- \
+        rabbitmq-diagnostics check_running >/dev/null 2>&1
+    then
+
+        if sudo kubectl exec \
+            -n rabbitmq \
+            rabbitmq-server-0 \
+            -- \
+            rabbitmq-diagnostics check_port_listener 15671 >/dev/null 2>&1
+        then
+
+            READY=1
+            break
+
+        fi
+
+    fi
+
+    sleep 2
+
+done
+
+if [ "$READY" -ne 1 ]
+then
+    log "ERROR: RabbitMQ Management API did not become ready."
+    exit 1
+fi
+
+log "RabbitMQ Management API is ready"
+
+###############################################
+# Wait RabbitMQ Management API Stabilization
+###############################################
+
+log "Waiting for RabbitMQ Management API stabilization..."
+
+sleep 15
+
 
 ###############################################
 # Deploy Topology
@@ -434,35 +579,45 @@ sudo kubectl apply \
   -f "$PROJECT_ROOT/topology/binding-products.yaml" \
   -f "$PROJECT_ROOT/topology/binding-notifications.yaml"
 
-###############################################
-# Wait Topology
-###############################################
+log "Waiting for Topology Operator reconciliation"
 
-# FIX 7: Wait for the Topology Operator to reconcile queues and exchanges.
-# Bindings are excluded — the Binding CRD does not support the list verb
-# and returns MethodNotAllowed. We check Ready condition via jsonpath since
-# the --no-headers column format varies by operator version.
-log "Waiting for topology resources to reconcile"
-for i in $(seq 1 30); do
-    READY=$(sudo kubectl get queues,exchanges \
+READY=0
+
+for i in $(seq 1 60)
+do
+
+    NOT_READY=$(
+        sudo kubectl get \
+        vhosts,users,permissions,exchanges,queues \
         -n "$NAMESPACE" \
-        -o jsonpath='{range .items[*]}{range .status.conditions[?(@.type=="Ready")]}{.status}{" "}{end}{end}' \
-        2>/dev/null | tr ' ' '\n' | grep -c "^True$" || true)
-    TOTAL=$(sudo kubectl get queues,exchanges \
-        -n "$NAMESPACE" \
-        -o jsonpath='{range .items[*]}{"x "}{end}' \
-        2>/dev/null | wc -w || true)
-    if [ "$TOTAL" -gt 0 ] && [ "$READY" -eq "$TOTAL" ]; then
-        log "All $TOTAL topology resources ready"
+        -o jsonpath='{range .items[*]}{range .status.conditions[?(@.type=="Ready")]}{.status}{"\n"}{end}{end}' \
+        2>/dev/null \
+        | grep -vc "^True$" || true
+    )
+
+    if [ "$NOT_READY" -eq 0 ]
+    then
+        READY=1
         break
     fi
-    if [ "$i" -eq 30 ]; then
-        log "WARNING: Topology resources may not be fully reconciled after 60s — check with: kubectl get queues,exchanges -n $NAMESPACE"
-        break
-    fi
-    log "Topology reconciling ($READY/$TOTAL ready)..."
+
     sleep 2
+
 done
+
+if [ "$READY" -ne 1 ]
+then
+    log "ERROR: RabbitMQ topology failed to reconcile."
+
+    sudo kubectl get \
+    vhosts,users,permissions,queues,exchanges \
+    -n "$NAMESPACE"
+
+    exit 1
+fi
+
+log "RabbitMQ topology successfully reconciled."
+
 
 ###############################################
 # Monitoring
@@ -494,6 +649,11 @@ sudo kubectl exec \
   -n rabbitmq \
   rabbitmq-server-0 \
   -- rabbitmqctl cluster_status
+
+sudo kubectl exec \
+  -n rabbitmq \
+  rabbitmq-server-0 \
+  -- rabbitmqctl list_vhosts
 
 echo
 

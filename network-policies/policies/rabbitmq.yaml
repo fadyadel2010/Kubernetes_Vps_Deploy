@@ -50,8 +50,10 @@ spec:
         - namespaceSelector: {}
 
       ports:
-        - protocol: TCP
-          port: 15672
+      - port: 15671
+        protocol: TCP
+      - port: 15672
+        protocol: TCP
 
 ---
 

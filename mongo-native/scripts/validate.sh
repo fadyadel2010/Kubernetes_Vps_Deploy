@@ -2,23 +2,7 @@
 set -euo pipefail
 
 ############################################################
-# Environment
-############################################################
-
-[ -f ".env" ] || fail ".env not found"
-
-set -a
-source .env
-set +a
-
-############################################################
-# Variables
-############################################################
-
-NAMESPACE="$MONGO_NAMESPACE"
-
-############################################################
-# Shopixy MongoDB Production Validation
+# Paths
 ############################################################
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -72,11 +56,21 @@ fail() {
 # Environment
 ############################################################
 
-[ -f ".env" ] || fail ".env not found"
+ENV_FILE="${PROJECT_ROOT}/.env"
+
+if [ ! -f "$ENV_FILE" ]; then
+    fail ".env not found: $ENV_FILE"
+fi
 
 set -a
-source .env
+source "$ENV_FILE"
 set +a
+
+############################################################
+# Variables
+############################################################
+
+NAMESPACE="$MONGO_NAMESPACE"
 
 ############################################################
 # Header
@@ -390,8 +384,6 @@ ok "ServiceMonitor verified"
 ############################################################
 # Monitoring
 ############################################################
-
-section "Monitoring"
 
 EXPORTER_POD=$(
 sudo kubectl get pods \
