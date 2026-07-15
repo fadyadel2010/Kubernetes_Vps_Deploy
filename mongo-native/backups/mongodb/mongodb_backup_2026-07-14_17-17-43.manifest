@@ -1,0 +1,7 @@
+Timestamp=2026-07-14_17-17-43
+ReplicaSet=rs0
+BackupPod=mongo-0
+MongoVersion=4.4.29-28
+Archive=mongodb_backup_2026-07-14_17-17-43.tar.gz
+ArchiveSizeBytes=1474
+RetentionDays=7

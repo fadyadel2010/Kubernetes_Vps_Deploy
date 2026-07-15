@@ -76,16 +76,16 @@ run_stack "Firewall" \
     "firewall" \
     "bootstrap.sh"
 
-run_stack "Platform" \
-    "platform" \
-    "bootstrap.sh"
-
 run_stack "MinIO" \
     "minio" \
     "bootstrap.sh"
 
 run_stack "PostgreSQL" \
     "postgresql" \
+    "bootstrap.sh"
+
+run_stack "Prometheus" \
+    "prometheus" \
     "bootstrap.sh"
 
 run_stack "MongoDB" \
@@ -102,10 +102,6 @@ run_stack "Redis" \
 
 run_stack "OpenSearch" \
     "opensearch" \
-    "bootstrap.sh"
-
-run_stack "Prometheus" \
-    "prometheus" \
     "bootstrap.sh"
 
 run_stack "Grafana" \

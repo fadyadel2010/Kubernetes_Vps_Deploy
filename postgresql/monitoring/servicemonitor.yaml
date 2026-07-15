@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+
+metadata:
+  name: shopixy-postgres
+  namespace: prometheus
+
+  labels:
+    release: prometheus
+
+spec:
+  namespaceSelector:
+    matchNames:
+      - postgresql
+
+  selector:
+    matchLabels:
+      app: shopixy-postgres-metrics
+
+  endpoints:
+    - port: metrics
+      interval: 30s
+      path: /metrics

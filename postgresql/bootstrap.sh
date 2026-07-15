@@ -82,27 +82,30 @@ echo "[OK]"
 echo ""
 
 ############################################
-# Verify Plugin
+# Ensuring Barman Cloud Plugin
 ############################################
 
-echo "[4/16] Verifying Barman Plugin..."
+echo "[4/16] Ensuring Barman Cloud Plugin..."
 
-PLUGIN_COUNT=$($KUBECTL get deployment \
--n cnpg-system \
-plugin-barman-cloud \
---ignore-not-found \
---no-headers | wc -l)
+if ! $KUBECTL get deployment \
+    barman-cloud \
+    -n cnpg-system >/dev/null 2>&1
+then
+    echo "[INFO] Installing Barman Cloud Plugin..."
 
-if [[ "$PLUGIN_COUNT" -eq 0 ]]; then
-    echo ""
-    echo "ERROR:"
-    echo "plugin-barman-cloud is not installed."
-    echo ""
-    exit 1
+    $KUBECTL apply -f \
+      https://github.com/cloudnative-pg/plugin-barman-cloud/releases/download/v0.13.0/manifest.yaml
+
+    $KUBECTL rollout status \
+      deployment/barman-cloud \
+      -n cnpg-system \
+      --timeout=300s
+else
+    echo "[INFO] Barman Cloud Plugin already installed."
 fi
 
 echo "[OK]"
-echo ""
+echo
 
 ############################################
 # Namespace
@@ -437,6 +440,19 @@ done
 
 echo "[OK]"
 
+echo ""
+
+############################################
+# Monitoring
+############################################
+
+echo "Configuring PostgreSQL Monitoring..."
+
+$KUBECTL apply -f "$SCRIPT_DIR/monitoring/metrics-service.yaml"
+
+$KUBECTL apply -f "$SCRIPT_DIR/monitoring/servicemonitor.yaml"
+
+echo "[OK]"
 echo ""
 
 ############################################
@@ -812,20 +828,6 @@ echo "PostgreSQL Pods..."
 $KUBECTL get pods \
     -n postgresql \
     -o wide
-
-echo ""
-
-############################################
-# Prometheus Integration
-############################################
-
-echo "Configuring Prometheus..."
-
-$KUBECTL label podmonitor \
-    shopixy-postgres \
-    -n postgresql \
-    release=prometheus \
-    --overwrite >/dev/null 2>&1 || true
 
 echo ""
 

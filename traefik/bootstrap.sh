@@ -57,6 +57,24 @@ $KUBECTL get svc traefik -n kube-system >/dev/null || {
 
 echo "[OK] Traefik Service"
 
+############################################################
+# TCP Routes
+############################################################
+
+echo
+echo "Applying TCP Routes..."
+
+$KUBECTL apply -f "$SCRIPT_DIR/tcp/"
+
+echo "[OK] TCP Routes applied"
+
+echo
+echo "Verifying TCP Routes..."
+
+$KUBECTL get ingressroutetcp -A
+
+echo "[OK] TCP Routes verified"
+
 echo
 echo "========================================="
 echo " Traefik Bootstrap Completed Successfully"
